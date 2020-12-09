@@ -40,8 +40,8 @@ class Person(object):
         print('_private_method')
 
     @classmethod
-    def from_string(cls, name):
-        return Person(name)
+    def from_string(cls, name, age):
+        return Person(name, age)
 
     def abstract_method(self):
         """

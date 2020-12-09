@@ -1,5 +1,4 @@
 from person import *
-import asyncio
 
 if __name__ == '__main__':
     # Python不支持方法重载，但支持参数默认值
@@ -9,6 +8,7 @@ if __name__ == '__main__':
     print(a.can_work())
     b.print()
 
+    # 测试'*'和'**'可变参数方法解析
     b.variable_parameters_method('wwww', 1, 2, 3, fish=1)
 
     # 测试方法命名下划线规范
@@ -24,5 +24,8 @@ if __name__ == '__main__':
     rp.abc()
 
     # 使用dir打印非特殊方法
-    print(dir(asyncio))
-    print([m for m in dir(asyncio.BaseProtocol) if '__' not in m])
+    print([m for m in dir(Person) if '__' not in m])
+
+    # 测试@classmethod
+    c = Person.from_string('Tom', 20)
+    c.print()
