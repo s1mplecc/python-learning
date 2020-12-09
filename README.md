@@ -44,7 +44,7 @@ vector_test.py .                                                         [100%]
 ============================== 4 passed in 0.01s ===============================
 ```
 
-有趣的是，如果某个测试方法未通过（断言报错），上述的 `.` 会变为 `F`，表明是 test_example.py 文件中的第二个测试方法未通过，并在下面打印具体的出错信息。但 pytest 框架并不会告诉你
+有趣的是，如果某个测试方法未通过（断言报错），上述的 `.` 会变为 `F`，表明文件中的第几个测试方法 Failed 了，并在下面打印出错信息。如果断言的是一个简单的表达式，pytest 不会为你计算等式左侧的值，因为它相信你能一眼就看出问题所在。而如果断言语句包含了其他方法的调用，pytest 则会提示你具体的出错信息，方便程序员定位问题。
 
 ```
 ============================= test session starts ==============================
@@ -53,20 +53,34 @@ rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning/lecture2
 collected 4 items
 
 test_example.py .F.                                                      [ 75%]
-vector_test.py .                                                         [100%]
+vector_test.py F                                                         [100%]
 
 =================================== FAILURES ===================================
 ____________________________ TestClass2.test_three _____________________________
 
-self = <test_example.TestClass2 object at 0x104e6c880>
+self = <test_example.TestClass2 object at 0x110e157f0>
 
     def test_three(self):
->       assert 1 + 1 == 3
-E       assert (1 + 1) == 3
+>       assert 1.1 * 999 == 3
+E       assert (1.1 * 999) == 3
 
 test_example.py:15: AssertionError
+____________________ TestVector.test_should_print_correctly ____________________
+
+self = <vector_test.TestVector object at 0x110e15eb0>
+
+    def test_should_print_correctly(self):
+        v1 = Vector()
+>       assert str(v1) == 'Vector(0,)'
+E       AssertionError: assert 'Vector(0)' == 'Vector(0,)'
+E         - Vector(0,)
+E         ?         -
+E         + Vector(0)
+
+vector_test.py:8: AssertionError
 =========================== short test summary info ============================
-FAILED test_example.py::TestClass2::test_three - assert (1 + 1) == 3
-========================= 1 failed, 3 passed in 0.03s ==========================
+FAILED test_example.py::TestClass2::test_three - assert (1.1 * 999) == 3
+FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
+========================= 2 failed, 2 passed in 0.04s ==========================
 ```
 
