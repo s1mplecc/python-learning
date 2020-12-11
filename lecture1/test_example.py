@@ -6,7 +6,7 @@ class TestClass:
         assert 'h' in 'this'
 
     # will not be tested
-    def two_test(self):
+    def second_test(self):
         assert 1 + 1 == 3
 
 
@@ -15,15 +15,15 @@ class TestClass2:
         assert 1 + 1 == 2
 
 
-# will be tested
-def test_four():
-    assert 1 + 1 == 2
-
-
 class NotTestClass:
     # will not be tested
-    def test_five(self):
+    def test_four(self):
         assert 1 + 1 == 2
+
+
+# will be tested
+def test_five():
+    assert 1 + 1 == 2
 
 
 if __name__ == "__main__":

@@ -102,3 +102,7 @@ FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
 _ 默认情况下，ne （）委托给eq （）并反转结果，除非结果为NotImplemented。 比较运算符之间没有其他隐含关系，例如，（x的真值并不意味着x ⇐ y。 _
 
 ## Lecture 2
+
+### 鸭子类型
+
+### 重载特殊方法
