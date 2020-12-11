@@ -1,6 +1,6 @@
-## Lecture 1
+## 前言
 
-## Lecture 2
+## Lecture 1
 
 ### 使用 pytest 做单元测试
 
@@ -84,3 +84,12 @@ FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
 ========================= 2 failed, 2 passed in 0.04s ==========================
 ```
 
+### 重载运算符
+
+在_Python 2_中，请始终记住也要重写`ne`函数
+
+在_Python 3_中，这不再是必需的，因为https://docs.python.org/3/reference/datamodel.html#object.ne[documentation]指出：
+
+_ 默认情况下，ne （）委托给eq （）并反转结果，除非结果为NotImplemented。 比较运算符之间没有其他隐含关系，例如，（x的真值并不意味着x ⇐ y。 _
+
+## Lecture 2
