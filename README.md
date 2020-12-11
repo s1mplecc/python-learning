@@ -1,8 +1,8 @@
 ## 前言
 
-在写该系列时我正在阅读《流畅的 Python》这本书，首先夸一下这本书，这本书不仅囊括了 Python 的诸多特性，而且为我们展现了一种 Python 的设计思想，一种与我之前接触的 Java OOP 截然不同的思想，比如 Python 内置了许多特殊方法（special methods），又比如“鸭子类型”：只要表现的像一个序列，那么就可以对它进行迭代，等等。总的来说，Python 有它自己的设计风格，它是一门小而精的语言，专为程序员高效编码而生。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对 Python 这门语言有一些更多感悟。
+在写该系列时我正在阅读《流畅的 Python》这本书，首先夸一下这本书，这本书不仅囊括了 Python 的诸多特性，而且为我们展示了一种 Python 设计思想，一种与我之前接触的 Java OOP 截然不同的思想，比如 Python 内置了许多特殊方法（special methods），又比如“鸭子类型”：只要表现的像一个序列，那么就可以对它进行迭代，等等。总的来说，Python 有它自己的设计风格，它是一门注重实用，专为程序员高效编码而生的语言。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对 Python 这门语言有一些更多感悟。
 
-当然，“光看不练假把式”，最开始的时候，我只是在命令行中去验证一些特性，随后我意识到这远远不够，为什么不将学习中的零碎知识点加以整理做成一个系列呢？于是，该系列诞生了。由于知识点的离散性，所以对 Lecture 的划分就显得有些随心所欲，我尽量在目录中将知识点的名称罗列出来。
+当然，“光看不练假把式”，最开始的时候，我只是在命令行中去验证一些 Python 特性，随后我意识到这远远不够，为什么不将学习中的零碎知识点加以整理做成一个系列呢？于是，该系列诞生了。由于知识点的离散性，所以对 Lecture 的划分就显得有些随心所欲，我尽量在目录中将知识点的名称罗列出来。
 
 代码已经托管到 Github 上，链接：https://github.com/s1mplecc/python-learning-lectures
 
@@ -17,18 +17,22 @@
 
 ## Lecture 1
 
-以单元测试作为系列学习的开始，应当还算合理。我想尽量给这个学习系列带入些测试驱动的思想，一方面，熟练掌握一门语言的过程其实是一个特性一个特性往上垒的过程，今天学习了 Python 重载运算符，明天学习如何编写 Python 装饰器，这样看来，每次编写一个单元测试用于验证一个语言特性最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业。
+以单元测试作为系列学习的开始，应当还算合理。我想尽量给这个学习系列带入些测试驱动的思想，一方面，熟练掌握一门语言的过程其实是特性累积的过程，今天学习了 Python 重载运算符，明天学习如何编写 Python 装饰器，这样看来，每次编写一个单元测试用于验证一个语言特性最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业，而通过运行测试时打印的一系列方法名，可以清楚这些模块涉及了哪些 Python 特性。
+
+尽管我的测试方法命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 `should_` 这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
 
 ### 使用 pytest 做单元测试
 
+至于为什么选择 pytest 作为单元测试框架，也不是什么深思熟虑后的结果，只是我单纯的讨厌 Python 自带的 unittest 的写法，需要继承一个测试基类，而且到处充斥着 `self`。反观 pytest，只需要符合它的命名规范，测试方法就会被框架自动检测到并运行，而且 pytest 重写了 assert 关键字，打印信息也更加人性化。
+
 编写 pytest 测试样例需要符合如下规范：
 
-- 测试文件必须以 `test_` 开头或结尾；
+- 测试文件如果不指定，必须以 `test_` 开头或结尾；
 - 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
 - 测试函数必须以 `test_` 开头；
 - pytest 框架没有提供特殊的断言方法，直接使用 Python 的 assert 关键字。
 
-需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，就会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test `开头）中的 `test_` 方法也不会被执行。
+需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test `开头）中的 `test_` 方法也不会被执行。
 
 有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。 下面这条命令可以避免生成 pytest_cache 测试缓存文件。
 
@@ -36,7 +40,7 @@
 pytest -p no:cacheprovider
 ```
 
-**第二种**，在 main 函数运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组，本质上等同于在命令行执行。这样做的好处是可以在 IDE 中例如 PyCharm  中直接 run 起来或者 debug 调试。另外需要注意的是，如果使用这种方法运行测试，实际测试覆盖的范围是与第一种方法相同的，即**当前文件夹下所有符合命名规范的测试，而不只是当前 main 函数所在的文件**。
+**第二种**，在 main 函数运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 IDE 中例如 PyCharm  中直接 run 起来或者 debug 调试，也可以方便地控制测试的粒度，可以只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。目前 PyCharm 集成的测试工具包括 unittest、pytest、Nosetests 和 Twisted Trial。
 
 ```
 class TestClass:
@@ -52,7 +56,7 @@ if __name__ == "__main__":
 ```
 ============================= test session starts ==============================
 platform darwin -- Python 3.8.6, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
-rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning/lecture2
+rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning-lecture/lecture2
 collected 4 items
 
 test_example.py ...                                                      [ 75%]
@@ -66,7 +70,7 @@ vector_test.py .                                                         [100%]
 ```
 ============================= test session starts ==============================
 platform darwin -- Python 3.8.6, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
-rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning/lecture2
+rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning-lecture/lecture2
 collected 4 items
 
 test_example.py .F.                                                      [ 75%]
@@ -108,6 +112,12 @@ FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
 在_Python 3_中，这不再是必需的，因为https://docs.python.org/3/reference/datamodel.html#object.ne[documentation]指出：
 
 _ 默认情况下，ne （）委托给eq （）并反转结果，除非结果为NotImplemented。 比较运算符之间没有其他隐含关系，例如，（x的真值并不意味着x ⇐ y。 _
+
+### 生成式表达式 
+
+### * 和 ** 运算符
+
+
 
 ## Lecture 2
 
