@@ -1,3 +1,5 @@
+[toc]
+
 * [前言](#%E5%89%8D%E8%A8%80)
 * [Lecture 1](#lecture-1)
   * [使用 pytest 做单元测试](#%E4%BD%BF%E7%94%A8-pytest-%E5%81%9A%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
