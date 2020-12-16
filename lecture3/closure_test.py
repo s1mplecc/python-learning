@@ -14,11 +14,11 @@ class TestClosure:
 
         avg = make_average()
 
-        avg1 = avg(1)
+        avg1 = avg(1)  # (1) / 1
         assert avg1 == 1
-        avg2 = avg(2)
+        avg2 = avg(2)  # (1 + 2) / 2
         assert avg2 == 1.5
-        avg3 = avg(3)
+        avg3 = avg(3)  # (1 + 2 + 3) / 3
         assert avg3 == 2
 
     def test_should_find_bind_free_variables_in_closure_function(self):
