@@ -9,17 +9,18 @@ class TimeUnit(Enum):
 
 def clock(unit=TimeUnit.SECONDS):
     def decorate(func):
-        def target(*args, **kwargs):
+        def clocked(*args, **kwargs):
             start = time.perf_counter()
             result = func(*args, **kwargs)
             end = time.perf_counter()
+            arg_str = ', '.join(repr(arg) for arg in args)
             if unit == TimeUnit.SECONDS:
-                print(f'{end - start}s')
+                print(f'running {func.__name__}({arg_str}): {end - start}s')
             else:
-                print(f'{(end - start) * 1000}ms')
+                print(f'running {func.__name__}({arg_str}): {(end - start) * 1000}ms')
             return result
 
-        return target
+        return clocked
 
     return decorate
 
