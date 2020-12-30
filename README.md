@@ -1,12 +1,12 @@
 # 前言
 
-在写该系列时我正在阅读《流畅的 Python》这本书，这本书作为 Python 的进阶读物确实名不虚传，不仅囊括了 Python 的诸多特性，而且为我们展示了一种 Python 设计思想，一种与我之前接触的 Java OOP 截然不同的思想，比如 Python 内置了许多特殊方法或者叫魔法方法（magic methods），又比如“鸭子类型”：只要表现的像一个序列，那么就可以对它进行迭代，等等。总的来说，Python 有它自己的设计风格，它是一门注重实用，专为程序员高效编码而生的语言。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对 Python 这门语言有一些更多感悟。
+在写该系列时我正在阅读《流畅的 Python》这本书，这本书作为 Python 进阶的必读书物确实名不虚传，它不仅囊括了 Python 的诸多特性，而且为我们展示了一种 Python 设计思想，一种与我之前接触的 Java OOP 截然不同的思想，比如 Python 内置了许多特殊方法或者叫魔法方法（magic methods），又比如“鸭子类型”：只要表现的像一个序列，那么就可以对它进行迭代，等等。总的来说，Python 有它自己的设计风格，它是一门注重实用，专为程序员高效编码而生的语言。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对 Python 这门语言有一些更多感悟。
 
 当然，“光看不练假把式”，最开始的时候，我只是在命令行中去验证一些 Python 特性，随后我意识到这远远不够，为什么不将学习中的零碎知识点加以整理做成一个系列呢？于是，该系列诞生了。由于知识点的离散性，所以对 Lecture 的划分就显得有些随心所欲，我尽量在目录中将知识点的名称罗列出来。
 
 代码已经托管到 Github 上，链接：https://github.com/s1mplecc/python-learning-lectures
 
-如果你是在 PyCharm 中运行示例代码，那么 import 语句可能会有恼人的红色报错，但其实是可以正常运行的。只需要将子目录标记为源代码根目录，即 Mark Directory as Sources Root。
+本系列的所有 Python 代码都基于 Python 3.8.6 版本。另外，如果你是在 PyCharm 中运行示例代码，那么 import 语句可能会有恼人的红色报错，但其实不影响正常运行，只需要将子目录标记为源代码根目录，即 Mark Directory as Sources Root。
 
 # 目录
 
@@ -26,15 +26,15 @@
 
 # Lecture 1
 
-以单元测试作为系列学习的开始，应当还算合理。我想尽量给这个学习系列带入些测试驱动的思想，一方面，熟练掌握一门语言的过程其实是特性累积的过程，今天学习了 Python 重载运算符，明天学习如何编写 Python 装饰器，这样看来，每次编写一个单元测试用于验证一个语言特性最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业，而通过运行测试时打印的一系列方法名，可以清楚这些模块涉及了哪些 Python 特性。
+以单元测试作为系列学习的开始，应当还算合理。我想尽量给这个学习系列带入些测试驱动的思想，一方面，熟练掌握一门语言其实是语言特性掌握的累积，为了验证一个特性而编写一个单元测试看来最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业，而通过运行测试时打印的一系列方法名，可以清楚这些模块涉及了哪些 Python 特性。
 
-尽管我的测试方法命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 `should_` 这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
+除此之外，本章还将介绍如何阅读 Python 源码以及 Python 的编码规范，我相信这些对于任何语言的学习和实践都具有重要意义。阅读源码教会你怎样看懂别人的代码，遵循编码规范则可以让你编写出令人赏心悦目的代码。
 
-## 使用 pytest 做单元测试
+## 使用 pytest 编写单元测试
 
-至于为什么选择 pytest 作为单元测试框架，也不是多么深思熟虑后的结果，只是我单纯的讨厌 Python 自带的 unittest 的写法，需要继承一个测试基类，而且到处充斥着 `self`。反观 pytest，只需要符合它的命名规范，测试方法就会被框架自动检测到并运行，而且 pytest 重写了 assert 关键字，打印信息也更加人性化。
+为什么会选择 pytest 作为单元测试框架，只是单纯的不喜欢 Python 自带的 unittest 的写法，它需要继承一个测试基类，而且到处充斥着 `self`。而 pytest 只需要符合它的命名规范，测试方法就会被框架自动检测到并运行，并且 pytest 重写了 assert 关键字，打印信息也更加人性化。
 
-编写 pytest 测试样例需要符合如下规范：
+编写 pytest 测试用例需要符合如下规范：
 
 - 测试文件如果不指定，必须以 `test_` 开头或结尾；
 - 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
@@ -49,7 +49,7 @@
 pytest -p no:cacheprovider
 ```
 
-**第二种**，在 main 函数运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 IDE 中例如 PyCharm  中直接 run 起来或者 debug 调试，也可以方便地控制测试的粒度，可以只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。目前 PyCharm 集成的测试工具包括 unittest、pytest、Nosetests 和 Twisted Trial。
+**第二种**，在 main 函数运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 PyCharm 等 IDE 中直接 run 起来或者 debug 调试，也可以方便地控制测试的粒度，只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。目前 PyCharm 2020 版本集成的测试工具包括 unittest、pytest、Nosetests 和 Twisted Trial。
 
 ```
 class TestClass:
@@ -114,13 +114,134 @@ FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
 ========================= 2 failed, 2 passed in 0.04s ==========================
 ```
 
+**关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
+
 ## 如何阅读 Python 源码
+
+阅读源码是每个程序员都应该具备的技能，本章将介绍如何在 PyCharm IDE 中阅读源码的技巧。
+
+符号 O 上下箭头，O 代表 Override 的含义，O + 上箭头 表示跳转到父类的实现，O + 下箭头 表示跳转到子类的实现。比如我们可以看看 Python 内置的 list 的源码有这么一行
+
+```python
+class list(MutableSequence[_T], Generic[_T]):
+		def append(self, __object: _T) -> None: ...
+```
+
+可以看到 list 多重继承了 MutableSequence 和 Generic，如果点击 append 左边的向上箭头，就会跳转到父类 MutableSequence 的 append 实现处。如果点击向下箭头，则会跳转到 list 的子类比如 ActiveFormattingElements 的实现处。当你阅读一个具有继承结构的源码时，知道方法在父类和子类中的实现会对你有所帮助。
+
+快捷键：
+
+```
+Cmd + U 跳转到父类实现
+Cmd + Alt + B 跳转到子类实现
+Cmd + B/Left Click 跳转到定义处或使用处
+Cmd + [ 跳转到鼠标停留的上一个位置
+Cmd + ] 跳转到鼠标停留的下一个位置
+Cmd + E 跳转到最近浏览的文件
+```
+
+### Python 注解
+
+
+
+### Python 中的存根文件
+
+在 PyCharm 中，如果类或者函数的左边有 * 号标识，则说明这个类或函数在存根文件中有定义，你可以点击 * 号跳转到该文件对应的存根文件，通常是存放在 Python 库文件的 Typeshed Stubs 目录中，文件名以 `.pyi` 后缀结尾。同时，存根文件也是 GitHub 上一个单独的项目，项目地址：https://github.com/python/typeshed，Python 的标准库以及内置 builtins 存根可以在该项目的 stdlib 目录下找到。
+
+由于 Python 是动态语言，不对类型做强制约束，所以 IDE 在智能提示、类型检查以及重构等方面必然不如 Java 等静态语言来的方便。而**存根文件的作用就是方便第三方工具做静态类型检查和类型推断**，这方面 PyCharm 做的很好。我们来看看 Python 正则库的存根文件和源文件：
+
+```python
+# re.pyi
+@overload
+def compile(pattern: AnyStr, flags: _FlagsType = ...) -> Pattern[AnyStr]: ...
+@overload
+def compile(pattern: Pattern[AnyStr], flags: _FlagsType = ...) -> Pattern[AnyStr]: ...
+  
+# re.py
+def compile(pattern, flags=0):
+    "Compile a regular expression pattern, returning a Pattern object."
+    return _compile(pattern, flags)
+```
+
+这里只截取了源码中的一段 compile 函数。从形式上看，存根文件与 C 语言中的头文件有相似之处，将函数声明与函数定义分文件存放，但 Python 中的存根文件不是必须的，只是起到辅助 IDE 类型检查所用。
+
+先看源文件中的 compile 方法，调用了私有的 `_compile` 方法并返回一个 Pattern 对象，作用是将字符串处理（编译）成正则表达式模版。进一步阅读私有方法源码会发现，如果传入的 pattern 参数本来就是 Pattern 类型的，为了避免重复处理，方法会直接返回 pattern，如下面的代码所示。
+
+```python
+def _compile(pattern, flags):
+    if isinstance(pattern, Pattern):
+        if flags:
+            raise ValueError(
+                "cannot process flags argument with a compiled pattern")
+        return pattern
+```
+
+所以你现在应该就不难理解为什么存根文件中会存在两个 compile 函数声明，其中的第二个就是接收 Pattern 类型作为参数。除了 compile 函数之外，re 存根文件中的大多数函数都有两个重载函数，原因就是它们实现时都调用了 `_compile` 函数。事实上，为了防止用户多次调用 `_compile` 引起不必要的开销，`_compile` 也设置了缓存优化，这点留给读者自行阅读源码分析。
+
+## Python 编码规范
+
+> PEP，全称 Python Enhancement Proposals，译为 Python 增强提案。PEP 已经成为 Python 发布新特性的主要机制，它会收集社区对 Python 的改进意见，经过核心开发者的审查和认可最终形成提案向公众公示。[PEP 的官网首页](https://www.python.org/dev/peps/) 也是 PEP 0 的地址，在这里官方列举了所有的 PEP 的索引，你可以按序号、标题和类型进行检索。
+
+Python 开发者喜欢用 “Pythonic” 这个单词来形容符合 Python 编码风格的代码。这种风格既不是严格的规范也不是编译器强加给开发者的规则，而是大家在使用 Python 语言协同工作的过程中逐渐形成的习惯。你要记住：**Python 开发者不喜欢复杂的事物，他们崇尚直观、简洁而又易读的代码**。为此，Python 语言的早期贡献者 Tim Peters 提出了 [PEP 20 -- The Zen of Python](https://www.python.org/dev/peps/pep-0020/)，译为 Python 之禅，提出了共计 19 条 Python 编码的指导性原则。这已经作为一个彩蛋加入到 Python 内置模块中，你可以在 Python 交互式命令行中敲入 `import this` 查看。
+
+```
+>>> import this
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+这 19 条指导思想强调了代码简约可读的重要性，其中的大多数条目不仅仅适用于 Python，也适用于任何一门其他语言。
+
+除此之外，[PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/) 也是每个 Python 程序员应当阅读的，相较于 Python 之禅它提出了更为细致的建议，目的是让 Python 程序员遵循一致的编码风格。PEP 8 中的大部分都能在 Pycharm IDE 中找到智能提示，缩进、空格与空行也可以通过代码格式化快捷键（Reformat Code）来一键规范化，在 Mac OS 中默认快捷键为 `Cmd + Alt + L`，Windows 中为 `Ctrl + Alt + L`。如果你不使用 PyCharm，也可以安装 Pylint，这是一款 Python 源码静态分析工具，可以自动检测代码是否符合 PEP 8 风格指南。
+
+这里，我想强调一下 Python 中的命名规范。PEP 8 提倡采用不用的命名风格来区分 Python 语言中的不同角色。
+
+- 文件名（模块名）使用小写字母，单词间以下划线连接，如 base_futures.py；私有模块使用单个下划线开头，如 _collections_abc.py
+- 函数、变量及属性名，使用小写字母，单词间以下划线连接，如 dict_keys
+- 受保护的属性和函数，使用单个下划线开头，如 _protected_method
+- 私有的属性和函数，使用两个下划线开头，如 __private_method
+- 类与异常，以每个单词首字母大写来命名，如 BaseHandler、TypeError
+- 模块级别的常量，全部用大写字母，单词间以下划线连接，如 STDIN_FILENO
+- 类中的实例方法（instance method），首个参数命名为 self 表示对象自身；类方法（class method），首个参数命名为 cls 表示类自身
+
+有几点需要说明的是，由于 Python 没有 public、protected、private 等访问权限控制关键字，只能以有没有下划线开头这种默认的规范来确定范围，但是这并不是强制约束。即使你的函数以下划线开头，不管是定义在类中还是直接定义在模块中，在导入模块后仍然能够直接访问。但是需要注意的是，如果通过 `from ... import *` 导入的模块，单下划线以及双下划线开头的函数和属性并不会被导入到当前模块中。
+
+```python
+# from another import _internal_method  # 可以导入
+from another import *
+
+_internal_method()  # NameError: name '_internal_method' is not defined
+```
+
+如果你阅读 Python 源码，很少会看到以双下划线开头的私有属性和函数，基本上都是以单下划线开头。另外，尤其要避免以双下划线开头且结尾的命名格式，如 `__str__`，这是 Python 内置的魔法方法（magic methods，或称特殊方法）的命名方式。
+
+此外，Python 为了保持简洁性，一些简短的介词和连词，并没有严格的按照单词间下划线连接，而是直接拼接。比如 issubclass、fromtimestamp、getstate。
+
 
 # Lecture 2
 
 ## 鸭子类型
 
-## 重载特殊方法
+## 特殊方法
 
 ## 重载运算符
 
@@ -130,7 +251,7 @@ FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
 
 _ 默认情况下，ne （）委托给eq （）并反转结果，除非结果为NotImplemented。 比较运算符之间没有其他隐含关系，例如，（x的真值并不意味着x ⇐ y。 _
 
-## 生成式表达式 
+## 生成式表达式
 
 ## * 和 ** 运算符
 
