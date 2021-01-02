@@ -34,24 +34,26 @@
 
 为什么会选择 pytest 作为单元测试框架，只是单纯的不喜欢 Python 自带的 unittest 的写法，它需要继承一个测试基类，而且到处充斥着 `self`。而 pytest 只需要符合它的命名规范，测试方法就会被框架自动检测到并运行，并且 pytest 重写了 assert 关键字，打印信息也更加人性化。
 
-编写 pytest 测试用例需要符合如下规范：
+**编写 pytest 测试用例需要符合如下规范**：
 
 - 测试文件如果不指定，必须以 `test_` 开头或结尾；
 - 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
 - 测试函数必须以 `test_` 开头；
-- pytest 框架没有提供特殊的断言方法，直接使用 Python 的 assert 关键字。
+- 断言使用 Python 原生的 assert 关键字，pytest 框架没有提供特殊的断言方法。
 
-需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test `开头）中的 `test_` 方法也不会被执行。
+需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test ` 开头的类）中的 `test_` 方法也不会被执行。
 
-有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。 下面这条命令可以避免生成 pytest_cache 测试缓存文件。
+pytest 不包含在 Python 标准库中，需要另行安装依赖。有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。下面这条命令可以避免生成 pytest_cache 测试缓存文件。
 
 ```sh
 pytest -p no:cacheprovider
 ```
 
-**第二种**，在 main 函数运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 PyCharm 等 IDE 中直接 run 起来或者 debug 调试，也可以方便地控制测试的粒度，只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。目前 PyCharm 2020 版本集成的测试工具包括 unittest、pytest、Nosetests 和 Twisted Trial。
+**第二种**，在 main 函数中运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 PyCharm 等 IDE 中直接 run 或者 debug 调试，也可以方便地控制测试的粒度，譬如只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。除了 pytest，目前 PyCharm 2020 版本集成的测试工具还包括 原生的 unittest、Nosetests 以及 Twisted Trial。
 
-```
+```python
+import pytest
+
 class TestClass:
     def test_one(self):
         assert 1 + 1 == 2
@@ -116,6 +118,103 @@ FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
 
 **关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
 
+## Python 编码规范
+
+> PEP，全称 Python Enhancement Proposals，译为 Python 增强提案。PEP 已经成为 Python 发布新特性的主要机制，它会收集社区对 Python 的改进意见，经过核心开发者的审查和认可最终形成提案向公众公示。[PEP 的官网首页](https://www.python.org/dev/peps/) 也是 PEP 0 的地址，在这里官方列举了所有的 PEP 的索引，你可以按序号、标题和类型进行检索。
+
+### Python 之禅
+
+Python 开发者喜欢用 “Pythonic” 这个单词来形容符合 Python 编码风格的代码。这种风格既不是严格的规范也不是编译器强加给开发者的规则，而是大家在使用 Python 语言协同工作的过程中逐渐形成的习惯。要记住：**Python 开发者不喜欢复杂的事物，他们崇尚直观、简洁而又易读的代码**。为此，Python 语言的早期贡献者 Tim Peters 提出了 [PEP 20 -- The Zen of Python](https://www.python.org/dev/peps/pep-0020/)，译为 Python 之禅，提出了共计 19 条 Python 编码的指导性原则。这已经作为一个彩蛋加入到 Python 标准库中，你可以在 Python 交互式命令行中敲入 `import this` 查看。
+
+```
+>>> import this
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+这 19 条指导思想强调了代码简约可读的重要性，其中的大多数条目不仅仅适用于 Python，也适用于任何一门其他语言。
+
+### Python 风格指导
+
+除此之外，[PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/) 也是每个 Python 程序员应当阅读的，相较于 Python 之禅它提出了更为细致的建议，目的是让 Python 程序员遵循一致的编码风格。PEP 8 中的大部分都能在 Pycharm IDE 中找到智能提示，缩进、空格与空行也可以通过代码格式化快捷键（Reformat Code）来一键规范化，在 Mac OS 中默认快捷键为 `Cmd + Alt + L`，Windows 中为 `Ctrl + Alt + L`。如果你不使用 PyCharm，也可以安装 Pylint，这是一款 Python 源码静态分析工具，可以自动检测代码是否符合 PEP 8 风格指南。
+
+#### 命名规范
+
+这里，我想强调一下 Python 中的命名规范。PEP 8 提倡采用不用的命名风格来区分 Python 语言中的不同角色：
+
+- 文件名（模块名）使用小写字母，单词间以下划线连接，如 `base_futures.py`；私有模块使用单个下划线开头，如 `_collections_abc.py`；
+- 函数、变量及属性名，使用小写字母，单词间以下划线连接，如 `dict_keys`；
+- 受保护的属性和函数（子类可以访问），使用单个下划线开头，如 `_protected_method`；
+- 私有的属性和函数（子类也不能访问），使用两个下划线开头，如 `__private_method`；
+- 类与异常，以每个单词首字母大写来命名，如 `BaseHandler`、`TypeError`；
+- 模块级别的常量，全部用大写字母，单词间以下划线连接，如 `STDIN_FILENO `；
+- 类中的实例方法（instance method），首个参数命名为 `self` 表示对象自身；类方法（class method），首个参数命名为 `cls` 表示类自身。
+
+有几点需要说明的是，Python 中**下划线前缀仅仅是个约定**，由于 Python 没有 public、protected、private 等访问权限控制关键字，只能以有没有下划线开头这种约定俗成的规范告诉程序员这个变量或函数的范围，注意这并不是强制约束。即使函数以下划线开头，在导入模块后仍能够通过 dot 运算符直接访问。
+
+```python
+>>> import another
+>>> another.external_func()
+This is a external_func.
+>>> another._internal_func()
+This is a _internal_func.
+```
+
+但需要注意的是，如果通过 * 通配符导入的模块，单下划线以及双下划线开头的函数和属性并不会被导入到当前模块中，除非导入模块显式定义了包含这些函数和属性的 `__all__` 列表（但通常不会这么做）。此外，也不建议通过通配符导入模块，应当按照最小导入原则，显式的导入需要用到的函数和属性。
+
+```python
+>>> from another import *
+>>> external_func()
+This is a external_func.
+>>> _internal_func()
+NameError: name '_internal_func' is not defined
+```
+
+在命名时，尤其要**避免以双下划线开头且结尾的命名格式**，如 `__foo__`，这是 Python 内置的魔法方法（magic methods，或称特殊方法，如 `__init__`），以及内置属性（如 `__code__`）的命名方式。因为你不能保证在后续版本中 Python 不会将 `__foo__` 作为内置方法或属性。
+
+如果你阅读 Python 标准库源码，会发现基本上私有命名都是以单下划线开头，不论是私有函数还是私有类或是私有变量和常量，很少会看到以双下划线开头的。PEP 8 也提倡对于**非公有方法和属性使用单个下划线开头**，只有在避免子类命名冲突时才采用双下划线开头（且不以双下划线结尾），这是由于双下划线前缀会导致 Python 解释器改写属性名称（name mangling）。比如下面代码中的 `__v3` 就被改写为 `_Foo__v3` 类名 + 变量名的格式：
+
+```python
+>>> class Foo:
+...     v1 = 1
+...     _v2 = 2
+...     __v3 = 3
+...     __v4_ = 4 
+...     __v5__ = 5
+... 
+>>> [_ for _ in dir(Foo) if 'v' in _]
+['_Foo__v3', '_Foo__v4_', '__v5__', '_v2', 'v1']
+```
+
+上面代码使用一个**单独的下划线** `_` 作为循环中的变量名称，代表这个变量是临时的，名称无关紧要，你可以将其理解为**占位符**。
+
+PEP 8 还提到，对于与 Python 保留关键字命名冲突的公有属性，可以采用**单个下划线结尾**的命名格式，这要优于使用缩略格式。比如下面的 `class_` 变量：
+
+```python
+tkinter.Toplevel(master, class_='ClassName')
+```
+
+另外，Python 在维持语义清晰的原则上为了保证简洁性，一些**简短的介词和连词间会省略下划线**，并没有严格的按照单词间下划线连接，而是直接拼接，比如 `isinstance`、`__setattr__` 和 `getstate`。
+
 ## 如何阅读 Python 源码
 
 阅读源码是每个程序员都应该具备的技能，本章将介绍如何在 PyCharm IDE 中阅读源码的技巧。
@@ -177,65 +276,6 @@ def _compile(pattern, flags):
 ```
 
 所以你现在应该就不难理解为什么存根文件中会存在两个 compile 函数声明，其中的第二个就是接收 Pattern 类型作为参数。除了 compile 函数之外，re 存根文件中的大多数函数都有两个重载函数，原因就是它们实现时都调用了 `_compile` 函数。事实上，为了防止用户多次调用 `_compile` 引起不必要的开销，`_compile` 也设置了缓存优化，这点留给读者自行阅读源码分析。
-
-## Python 编码规范
-
-> PEP，全称 Python Enhancement Proposals，译为 Python 增强提案。PEP 已经成为 Python 发布新特性的主要机制，它会收集社区对 Python 的改进意见，经过核心开发者的审查和认可最终形成提案向公众公示。[PEP 的官网首页](https://www.python.org/dev/peps/) 也是 PEP 0 的地址，在这里官方列举了所有的 PEP 的索引，你可以按序号、标题和类型进行检索。
-
-Python 开发者喜欢用 “Pythonic” 这个单词来形容符合 Python 编码风格的代码。这种风格既不是严格的规范也不是编译器强加给开发者的规则，而是大家在使用 Python 语言协同工作的过程中逐渐形成的习惯。你要记住：**Python 开发者不喜欢复杂的事物，他们崇尚直观、简洁而又易读的代码**。为此，Python 语言的早期贡献者 Tim Peters 提出了 [PEP 20 -- The Zen of Python](https://www.python.org/dev/peps/pep-0020/)，译为 Python 之禅，提出了共计 19 条 Python 编码的指导性原则。这已经作为一个彩蛋加入到 Python 内置模块中，你可以在 Python 交互式命令行中敲入 `import this` 查看。
-
-```
->>> import this
-The Zen of Python, by Tim Peters
-
-Beautiful is better than ugly.
-Explicit is better than implicit.
-Simple is better than complex.
-Complex is better than complicated.
-Flat is better than nested.
-Sparse is better than dense.
-Readability counts.
-Special cases aren't special enough to break the rules.
-Although practicality beats purity.
-Errors should never pass silently.
-Unless explicitly silenced.
-In the face of ambiguity, refuse the temptation to guess.
-There should be one-- and preferably only one --obvious way to do it.
-Although that way may not be obvious at first unless you're Dutch.
-Now is better than never.
-Although never is often better than *right* now.
-If the implementation is hard to explain, it's a bad idea.
-If the implementation is easy to explain, it may be a good idea.
-Namespaces are one honking great idea -- let's do more of those!
-```
-
-这 19 条指导思想强调了代码简约可读的重要性，其中的大多数条目不仅仅适用于 Python，也适用于任何一门其他语言。
-
-除此之外，[PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/) 也是每个 Python 程序员应当阅读的，相较于 Python 之禅它提出了更为细致的建议，目的是让 Python 程序员遵循一致的编码风格。PEP 8 中的大部分都能在 Pycharm IDE 中找到智能提示，缩进、空格与空行也可以通过代码格式化快捷键（Reformat Code）来一键规范化，在 Mac OS 中默认快捷键为 `Cmd + Alt + L`，Windows 中为 `Ctrl + Alt + L`。如果你不使用 PyCharm，也可以安装 Pylint，这是一款 Python 源码静态分析工具，可以自动检测代码是否符合 PEP 8 风格指南。
-
-这里，我想强调一下 Python 中的命名规范。PEP 8 提倡采用不用的命名风格来区分 Python 语言中的不同角色。
-
-- 文件名（模块名）使用小写字母，单词间以下划线连接，如 base_futures.py；私有模块使用单个下划线开头，如 _collections_abc.py
-- 函数、变量及属性名，使用小写字母，单词间以下划线连接，如 dict_keys
-- 受保护的属性和函数，使用单个下划线开头，如 _protected_method
-- 私有的属性和函数，使用两个下划线开头，如 __private_method
-- 类与异常，以每个单词首字母大写来命名，如 BaseHandler、TypeError
-- 模块级别的常量，全部用大写字母，单词间以下划线连接，如 STDIN_FILENO
-- 类中的实例方法（instance method），首个参数命名为 self 表示对象自身；类方法（class method），首个参数命名为 cls 表示类自身
-
-有几点需要说明的是，由于 Python 没有 public、protected、private 等访问权限控制关键字，只能以有没有下划线开头这种默认的规范来确定范围，但是这并不是强制约束。即使你的函数以下划线开头，不管是定义在类中还是直接定义在模块中，在导入模块后仍然能够直接访问。但是需要注意的是，如果通过 `from ... import *` 导入的模块，单下划线以及双下划线开头的函数和属性并不会被导入到当前模块中。
-
-```python
-# from another import _internal_method  # 可以导入
-from another import *
-
-_internal_method()  # NameError: name '_internal_method' is not defined
-```
-
-如果你阅读 Python 源码，很少会看到以双下划线开头的私有属性和函数，基本上都是以单下划线开头。另外，尤其要避免以双下划线开头且结尾的命名格式，如 `__str__`，这是 Python 内置的魔法方法（magic methods，或称特殊方法）的命名方式。
-
-此外，Python 为了保持简洁性，一些简短的介词和连词，并没有严格的按照单词间下划线连接，而是直接拼接。比如 issubclass、fromtimestamp、getstate。
-
 
 # Lecture 2
 
