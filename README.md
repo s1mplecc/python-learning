@@ -1,17 +1,25 @@
 # 前言
 
-在写该系列时我正在阅读《流畅的 Python》这本书，这本书作为 Python 进阶的必读书物确实名不虚传，它不仅囊括了 Python 的诸多特性，而且为我们展示了一种 Python 设计思想，一种与我之前接触的 Java OOP 截然不同的思想，比如 Python 内置了许多特殊方法或者叫魔法方法（magic methods），又比如“鸭子类型”：只要表现的像一个序列，那么就可以对它进行迭代，等等。总的来说，Python 有它自己的设计风格，它是一门注重实用，专为程序员高效编码而生的语言。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对 Python 这门语言有一些更多感悟。
+在写该系列时我正在阅读《流畅的 Python》这本书，这本书作为 Python 进阶的必读书物确实名副其实，它不仅囊括了 Python 的诸多特性，包括一些 Python 独特的高级特性，更重要的是，它为我们展示了一种 Python 的设计理念，一种与我之前接触的 Java OOP 不尽相同的设计思想。在面向对象语言中，非常强调对象的类型，一切行为都是通过对象之间的相互协作完成的。Python 虽然也是一门面向对象语言，但它却将这种类型的限定模糊了，最为典型的就是 Python 中的“**鸭子类型**”：例如只要表现的像一个序列，那么就可以对它进行迭代操作。究其根本原因，是因为 Python 内置了许多特殊方法或称为魔法方法（magic methods），这种设计显然与 Java 纯面向对象截然不同。总的来说，Python 是一门注重实用，专为程序员高效编码而生的语言，它有它自己的设计风格，Python 程序员专门为这种风格创造了一个专有词汇 “**Pythonic**”。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对这种风格以及 Python 的设计理念有一些更深的感悟。
 
 当然，“光看不练假把式”，最开始的时候，我只是在命令行中去验证一些 Python 特性，随后我意识到这远远不够，为什么不将学习中的零碎知识点加以整理做成一个系列呢？于是，该系列诞生了。由于知识点的离散性，所以对 Lecture 的划分就显得有些随心所欲，我尽量在目录中将知识点的名称罗列出来。
 
 代码已经托管到 Github 上，链接：https://github.com/s1mplecc/python-learning-lectures
 
-本系列的所有 Python 代码都基于 Python 3.8.6 版本。另外，如果你是在 PyCharm 中运行示例代码，那么 import 语句可能会有恼人的红色报错，但其实不影响正常运行，只需要将子目录标记为源代码根目录，即 Mark Directory as Sources Root。
+本系列教程的工作环境：
+
+- 系统版本：Mac OS 10.14
+- 命令行工具：Terminal + Zsh
+- 开发工具：PyCharm Professional 2020.3
+- Python 版本：3.8.6
 
 # 目录
 
 * [Lecture 1](#lecture-1)
-  * [使用 pytest 编写单元测试](#%E4%BD%BF%E7%94%A8-pytest-%E7%BC%96%E5%86%99%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
+  * [环境准备](#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87)
+    * [Python 版本](#python-%E7%89%88%E6%9C%AC)
+    * [依赖管理](#%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86)
+    * [环境隔离](#%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB)
   * [Python 编码规范](#python-%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83)
     * [Python 之禅](#python-%E4%B9%8B%E7%A6%85)
     * [Python 风格指导](#python-%E9%A3%8E%E6%A0%BC%E6%8C%87%E5%AF%BC)
@@ -20,6 +28,8 @@
     * [类型提示](#%E7%B1%BB%E5%9E%8B%E6%8F%90%E7%A4%BA)
     * [\.pyi 存根文件](#pyi-%E5%AD%98%E6%A0%B9%E6%96%87%E4%BB%B6)
     * [PyCharm 高效阅读源码](#pycharm-%E9%AB%98%E6%95%88%E9%98%85%E8%AF%BB%E6%BA%90%E7%A0%81)
+  * [单元测试](#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
+    * [使用 pytest 编写测试用例](#%E4%BD%BF%E7%94%A8-pytest-%E7%BC%96%E5%86%99%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B)
 * [Lecture 2](#lecture-2)
   * [鸭子类型](#%E9%B8%AD%E5%AD%90%E7%B1%BB%E5%9E%8B)
   * [特殊方法](#%E7%89%B9%E6%AE%8A%E6%96%B9%E6%B3%95)
@@ -35,97 +45,160 @@
 
 # Lecture 1
 
-以单元测试作为系列学习的开始，应当还算合理。我想尽量给这个学习系列带入些测试驱动的思想，一方面，熟练掌握一门语言其实是语言特性掌握的累积，为了验证一个特性而编写一个单元测试看来最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业，而通过运行测试时打印的一系列方法名，可以清楚这些模块涉及了哪些 Python 特性。
+作为系列学习的开始，我一直在思考应当安排哪些内容，考虑到动手实践的重要性，最终我安排了以下这四个章节。**环境准备**，将引导你搭建一个自己的 Python 开发环境；**编码规范**以及**阅读源码**章节，我相信这对于任何语言的学习和实践都具有重要意义，阅读源码教会你拿到一份源码该如何下手，遵循编码规范则让你编写出令人赏心悦目的代码；以及最后的**单元测试**章节，我将其作为验证语言特性的最佳工具，也是作为特性学习的正式开始。
 
-除此之外，本章还将介绍如何阅读 Python 源码以及 Python 的编码规范，我相信这些对于任何语言的学习和实践都具有重要意义。阅读源码教会你怎样看懂别人的代码，遵循编码规范则可以让你编写出令人赏心悦目的代码。
+## 环境准备
 
-## 使用 pytest 编写单元测试
+### Python 版本
 
-为什么会选择 pytest 作为单元测试框架，只是单纯的不喜欢 Python 自带的 unittest 的写法，它需要继承一个测试基类，而且到处充斥着 `self`。而 pytest 只需要符合它的命名规范，测试方法就会被框架自动检测到并运行，并且 pytest 重写了 assert 关键字，打印信息也更加人性化。
+目前 Python 主要活跃的有 Python 2.x 和 Python 3.x 两个大版本，与 C++ 和 Java 这种向后兼容的语言不同，Python 的两个版本互不兼容。舍弃兼容性是一种设计上的取舍，在我看来 Python 这种尤为注重“简约”的语言，敢于大胆摒弃一些有设计缺陷的旧包袱，从而拥抱新特性的作风，未尝不是一种 Pythonic 的体现，很大程度上避免了走向像 C++ 一样越来越臃肿晦涩的道路。
 
-**编写 pytest 测试用例需要符合如下规范**：
+Python 核心团队已于 2019 年正式宣布将在 2020 年停止对 Python2 的更新，在此期间会对 Python2 版本进行一些 bug 修复、安全增强以及移植等工作，以便使开发者顺利的从 Python2 迁移到 Python3。Python 2.7 是 2.x 系列的最后一个版本，官网上最新的 Python 2.7.18 版本发布于 2020 年 4 月 20 日。官方停止 Python2 更新的主要动机是想进行 Python3 的推广，以及同时维护两个版本给他们带来的工作负担。目前大部分 Python 开源项目已经兼容 Python3 了，所以**强烈建议使用 Python3 来开发新的项目**。
 
-- 测试文件如果不指定，必须以 `test_` 开头或结尾；
-- 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
-- 测试函数必须以 `test_` 开头；
-- 断言使用 Python 原生的 assert 关键字，pytest 框架没有提供特殊的断言方法。
-
-需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test ` 开头的类）中的 `test_` 方法也不会被执行。
-
-pytest 不包含在 Python 标准库中，需要另行安装依赖。有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。下面这条命令可以避免生成 pytest_cache 测试缓存文件。
+一般较新的 Linux 发行版已经预装了 Python2 和 Python3，如果没有，也可以通过各自的包管理器进行安装和更新。Mac OS 环境下可以通过 Homebrew 工具来安装 Python，可以附加 `@ + 版本号` 安装指定版本。在一般情况下（不手动修改软链接），命令行中的 `python` 通常是 python 2.7 或其旧版本的别名，`python3` 才指代 Python3 版本，可以通过 `--version` 参数来查看安装的具体版本。由于两个版本互不兼容，在命令行运行 Python 脚本前需要先确定其所用的 Python 版本。
 
 ```sh
-pytest -p no:cacheprovider
+➜ brew install python  # brew install python@2.7
+➜ python --version 
+Python 2.7.10
+
+➜ brew install python3  # brew install python@3.8
+➜ python3 --version
+Python 3.8.6
 ```
 
-**第二种**，在 main 函数中运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 PyCharm 等 IDE 中直接 run 或者 debug 调试，也可以方便地控制测试的粒度，譬如只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。除了 pytest，目前 PyCharm 2020 版本集成的测试工具还包括 原生的 unittest、Nosetests 以及 Twisted Trial。
+有时也需要在代码中，也就是**运行时确定 Python 版本**，此时用到的是内置的 sys 模块：
 
 ```python
-import pytest
-
-class TestClass:
-    def test_one(self):
-        assert 1 + 1 == 2
-
-if __name__ == "__main__":
-    pytest.main(['-p', 'no:cacheprovider'])
+>>> import sys
+>>> print(sys.version)
+3.8.6 (default, Oct  8 2020, 14:07:53) 
+[Clang 11.0.0 (clang-1100.0.33.17)]
+>>> print(sys.version_info)
+sys.version_info(major=3, minor=8, micro=6, releaselevel='final', serial=0)
 ```
 
-如果测试都通过了，打印结果如下图所示，显示总共有 4 个单元测试，`.py` 右侧的 `.` 代表该文件中有几个测试方法，右侧的百分比代表的是测试进度，即已跑完的测试占总测试比例。
+可以通过在运行时判断 Python 版本从而达到较好的兼容性，这在 Python 的内置模块以及标准库中使用较多。由于 `version_info` 本身是个 tuple 类型，重载了比较运算符，所以可以像下面这样直接进行比较：
 
-```
-============================= test session starts ==============================
-platform darwin -- Python 3.8.6, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
-rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning-lecture/lecture2
-collected 4 items
+```python
+# builtins.pyi
+if sys.version_info >= (3, 9):
+    from types import GenericAlias
 
-test_example.py ...                                                      [ 75%]
-vector_test.py .                                                         [100%]
-
-============================== 4 passed in 0.01s ===============================
-```
-
-有趣的是，如果某个测试方法未通过（断言报错），上述的 `.` 会变为 `F`，表明文件中的第几个测试方法失败了，并在下面打印出错信息。如果断言的是一个简单的表达式，pytest 不会为你计算等式左侧的值，因为它相信你能一眼就看出问题所在。而如果断言是为了验证被调用的方法输出是否正确，pytest 则会提示你具体的出错位置，方便程序员定位问题。
-
-```
-============================= test session starts ==============================
-platform darwin -- Python 3.8.6, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
-rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning-lecture/lecture2
-collected 4 items
-
-test_example.py .F.                                                      [ 75%]
-vector_test.py F                                                         [100%]
-
-=================================== FAILURES ===================================
-____________________________ TestClass2.test_three _____________________________
-
-self = <test_example.TestClass2 object at 0x110e157f0>
-
-    def test_three(self):
->       assert 1.1 * 999 == 3
-E       assert (1.1 * 999) == 3
-
-test_example.py:15: AssertionError
-____________________ TestVector.test_should_print_correctly ____________________
-
-self = <vector_test.TestVector object at 0x110e15eb0>
-
-    def test_should_print_correctly(self):
-        v1 = Vector()
->       assert str(v1) == 'Vector(0,)'
-E       AssertionError: assert 'Vector(0)' == 'Vector(0,)'
-E         - Vector(0,)
-E         ?         -
-E         + Vector(0)
-
-vector_test.py:8: AssertionError
-=========================== short test summary info ============================
-FAILED test_example.py::TestClass2::test_three - assert (1.1 * 999) == 3
-FAILED vector_test.py::TestVector::test_should_print_correctly - AssertionErr...
-========================= 2 failed, 2 passed in 0.04s ==========================
+# contextlib2.py
+if sys.version_info[:2] >= (3, 4):
+    _abc_ABC = abc.ABC
+else:
+    _abc_ABC = abc.ABCMeta('ABC', (object,), {'__slots__': ()})
 ```
 
-**关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
+上面的源码来自于两个不同的文件，阅读源码可以发现一些 Python 版本变更的内容。比如自 Python 3.9 引入的 GenericAlias 类型；Python 3.4 之前继承抽象类时还得使用 ABCMeta 形式。
+
+一般情况下，除非你开发的是供他人使用的第三方库，并不需要你在运行时显式判断版本。一方面是版本对于你是可控的，另一方面是如果滥用版本判断会降低代码的整洁性。如果不得不这么做，可以像内置模块 builtins.pyi 一样在存根文件中统一进行处理。
+
+### 依赖管理
+
+> **pip** - The Python Package Installer. You can use pip to install packages from the Python Package Index (PyPI) and other indexes.
+
+[pip](https://pip.pypa.io/en/stable/) 是 Python 的包安装和管理工具，类似于 npm 之于 JavaScript。Python 3.x 以上的发行版本中都是自带 pip 的。在使用之前先确定 pip 的版本，Python3 中的 pip 是 pip3 的别名，但如果安装了 Python2 的 pip，那么在为 Python3 项目安装依赖时请使用 pip3 命令，因为这两个命令会将依赖安装在不同的目录下。
+
+```sh
+➜ pip --version
+pip 20.3.3 from /usr/local/lib/python3.8/site-packages/pip (python 3.8)
+```
+
+常见的 pip 命令使用可以查阅官方文档，或者 `pip -h` 查阅帮助文档。与 JavaScript 的 package.json 一样，Python 也提供了统一管理依赖的配置文件 **requirements.txt**。文件中可以指定依赖的版本号，如果缺省则默认安装最新依赖。
+
+```
+####### example-requirements.txt #######
+beautifulsoup4              # Requirements without Version Specifiers
+docopt == 0.6.1             # Version Matching. Must be version 0.6.1
+keyring >= 4.1.1            # Minimum version 4.1.1
+coverage != 3.5             # Version Exclusion. Anything except version 3.5
+Mopidy-Dirble ~= 1.1        # Compatible release. Same as >= 1.1, == 1.*
+```
+
+使用 `-r` 参数指定通过 requirements.txt 文件安装依赖：
+
+```sh
+pip install -r requirements.txt
+```
+
+有时我们需要进行项目迁移，比如将本地项目部署至服务器，为了保证重新安装依赖时不影响项目的正常运行，可以使用 freeze 指令将所需的依赖和具体版本号写入 requirements.txt 文件中，再一次性安装所有依赖。
+
+```sh
+➜ pip freeze > requirements.txt
+➜ cat requirements.txt 
+certifi==2020.11.8
+matplotlib==3.3.2
+numpy==1.19.4
+six==1.15.0
+```
+
+### 环境隔离
+
+在 JavaScript 中，使用 npm 安装依赖会在当前目录下生成一个 node_modules 文件夹，依赖会被安装在这个文件夹中。除非指定 `-g` 或 `--global` 参数，将会在全局环境中安装依赖，在 Mac OS 或 Linux 系统中一般会被安装到 `/usr/local/lib/node_modules` 目录下。这样做的好处是将全局环境与局部环境隔离，避免依赖冲突，尤其是两个项目依赖同一个库的不同版本时。
+
+Python 中也有类似的问题，《Effective Python -- 编写高质量Python代码的59个有效方法》一书中的协作开发章节就提到：**使用虚拟环境隔离项目**。问题在于，通过 pip 命令安装的依赖是全局性的，这意味着这些安装好的模块可能会影响系统内的所有 Python 程序。全局依赖会被安装在特定 Python 版本的目录下，如 `/usr/local/lib/python3.8/site-packages`，对于使用 Python 3.8 的所有项目来说依赖是共享的。
+
+为此，Python 提供了一种解决方案，类似于 JavaScript 的局部环境，隔离出一个单独的 Python 局部环境，这种方案的典型就是 venv。
+
+#### venv
+
+> **venv** (for Python 3) and **virtualenv** (for Python 2) allow you to manage separate package installations for different projects. If you are using Python 3.3 or newer, the venv module is the preferred way to create and manage virtual environments. venv is included in the Python standard library and requires no additional installation.
+
+从 Python 2.7 开始，Python 社区开发了一些较底层的创建**虚拟环境**（virtual environment）的工具，在 Python 2.7 中这个工具叫做 virtualenv，这是一个三方工具，需要使用 pip 安装。而《Effective Python》一书中提到的工具 pyvenv 是 Python 3.3 所引入的，但由于一些缺陷在 Python 3.6 中已被弃用。取而代之的是 Python 3.5 引入的内置模块 venv，可以通过 `python3 -m venv` 使用这个命令。
+
+[官方文档](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment)中已经明确给出建议，如果使用的是 Python 3.3 及以后的版本，更加推荐使用 venv 去管理你的虚拟环境。下面我们扼要的介绍一下 venv 命令的使用方式。
+
+首先创建一个空项目 myproject，在该目录下执行 `python3 -m venv venv` 命令，第二个 venv 是创建的虚拟环境的文件夹名，系统中的环境会被拷贝到该目录下，包括 bin 中的 pip 和 python 命令，而 pip 安装的依赖会存放在 lib 目录中。
+
+```sh
+➜ mkdir myproject; cd myproject
+➜ python3 -m venv venv
+➜ ls -F
+venv/
+➜ ls -F venv
+bin/        include/    lib/        pyvenv.cfg
+```
+
+为了启用这套虚拟环境需要先运行**激活**脚本，启用后会发现命令行多了 `(venv)`  前缀，这明确的提示了开发者现在处于虚拟环境中。默认情况下虚拟环境只安装了 pip 和 setuptools 两个初始依赖，此时的环境已经独立于全局环境，全局依赖不会影响到此项目。pip 和 python3 命令都指向虚拟环境 bin 目录下的命令。
+
+```sh
+➜ source venv/bin/activate
+(venv) ➜ pip list    
+Package    Version
+---------- -------
+pip        20.2.1
+setuptools 49.2.1
+(venv) ➜ which python3
+/Users/s1mple/Downloads/myproject/venv/bin/python3
+(venv) ➜ python3 --version
+Python 3.8.6
+```
+
+退出虚拟环境时使用 `deactivate` 命令。
+
+```sh
+(venv) ➜ deactivate
+➜ which python3
+/usr/local/bin/python3
+```
+
+为了代替手动的在命令行创建虚拟环境，PyCharm 集成了 virtualenv 工具，并且官方文档已经标明：Python 3.3 版本之前使用第三方的 virtualenv 工具，Python 3.3 之后使用内置的 venv 模块。在新建项目时可以选择 New Virtualenv Environment 自动创建虚拟环境。
+
+有了虚拟环境，我们就可以使用 `pip freeze` 命令和 requirements.txt 文件很方便的重现一套环境。此外，在使用 venv 时，应当尽量避免移动环境目录，包括重命名项目名称，因为所有的路径（包括 python3 命令所指向的路径），都以硬编码的形式写在了安装目录中，更改目录路径将导致环境失效。解决办法是修改 `bin/active` 脚本中的 VIRTUAL_ENV 路径值，并重新激活。
+
+```sh
+# active
+VIRTUAL_ENV="/Users/s1mple/Downloads/myproject/venv"
+```
+
+#### Anaconda
+
+如果你觉得 pip + venv 的方式太过底层，也可以使用 Anaconda。Anaconda 是一个更高层次的包管理器和环境管理器，它依托于 conda 之上开发的，conda 可以理解为整合了 pip 和 venv 的功能，区别在于 conda 是跨平台和不限语言的（支持 R 语言）。PyCharm 也对 conda 提供了支持，可以直接通过 conda 创建虚拟环境。
+
+Anaconda 的下载文件较大（500MB），不仅自带 Python 还附带了许多常用数据科学包，已经成为了数据科学方向百宝箱式的存在。Anaconda 也提供可视化界面。总的来说，对于不太熟悉底层操作的数据分析师来说，Anaconda 易于上手体验友好。但对于软件开发来说，Anaconda 显得过于臃肿，这也是我不选择使用它的原因。现如今的 Python 环境支持官方库已经做的很好，如果不是做数据科学方向的，建议使用原生的 pip + venv。
 
 ## Python 编码规范
 
@@ -271,7 +344,7 @@ def foo(a: expression, b: expression = 5) -> expression:
 
 为了给 Python 静态类型检查提供统一的命名空间，标准库以渐进定型（gradual typing）的方式引入名为 [typing](https://docs.python.org/3/library/typing.html) 的新模块，新模块不会影响现有程序的正常运行，只会对不规范的类型作出提示。
 
-在 typing 模块中，定义了一些**特殊类型**（_SpecialForm），包括 Any, NoReturn, ClassVar, Union, Optional 等，从名称可以大概猜出这些类型的作用，比如：Any 代表任意类型；联合类型 `Union[X, Y]` 表示类型非 X 即 Y；Optional 作用则与 Java8 中的 Optional 类似，允许传入参数为空，可以避免空值引用的问题。
+在 typing 模块中，定义了一些**特殊类型**（\_SpecialForm），包括 Any, NoReturn, ClassVar, Union, Optional 等，从名称可以大概猜出这些类型的作用，比如：Any 代表任意类型；联合类型 `Union[X, Y]` 表示类型非 X 即 Y；Optional 作用则与 Java8 中的 Optional 类似，允许传入参数为空，可以避免空值引用的问题。
 
 除此之外，还有一些常见的数据类型，比如 List、Tuple、Dict、Sequence，它们只是作为标准库类型的别名存在，如：`List = _alias(list, T, inst=False)`。typing 模块也提供了对于**泛型**（Generics）的支持，让我们得以像 `List[int]` 这样去定义特定类型集合。想了解更多 typing 模块的功能，建议阅读 PEP 484文档或者直接阅读源码，源码的文档注释介绍了该模块的结构，通过 `__all__` 属性也可以查明 typing 模块都提供了哪些功能。
 
@@ -415,6 +488,75 @@ class list(MutableSequence[_T], Generic[_T]):
 | Cmd + Shift + F       | 搜索项目文件中的内容      | Find in Files               |
 
 这些都是 PyCharm 中非常实用的快捷键，不管是阅读源码还是自己编码，熟悉这些快捷键有助于快速定位到某个文件，某个函数或是某个变量，从而提高我们的效率。
+
+## 单元测试
+
+我已经不止一次被强调单元测试的重要性，单元测试作为一个黑盒接受输入验证输出，可以有效的测试一个方法的健壮性。此外，我想尽量给这个学习系列带入些测试驱动的思想。所以以单元测试作为特性学习的开始，应当还算合理。一方面，熟练掌握一门语言其实是语言特性掌握的累积，为了验证一个特性而编写一个单元测试看来最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业，而通过运行测试时打印的一系列方法名，可以清楚这些模块涉及了哪些 Python 特性。
+
+### 使用 pytest 编写测试用例
+
+选择 pytest 作为单元测试框架，是因为它简单实用。我个人不太欣赏 Python 自带的 unittest 模块的写法，测试类需要继承一个测试基类，并且到处充斥着 `self`。而 pytest 编写的测试用例只需要符合一定的命名规范，就会被框架自动检测到并运行。此外 pytest 还重写了 assert 关键字，打印信息也更加人性化。
+
+**编写 pytest 测试用例需要符合如下规范**：
+
+- 测试文件如果不指定，必须以 `test_` 开头或结尾；
+- 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
+- 测试函数必须以 `test_` 开头；
+- 断言使用 Python 原生的 assert 关键字，pytest 框架没有提供特殊的断言方法。
+
+需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test ` 开头的类）中的 `test_` 方法也不会被执行。
+
+pytest 不包含在 Python 标准库中，需要另行安装依赖。有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。下面这条命令可以避免生成 pytest_cache 测试缓存文件。
+
+```sh
+pytest -p no:cacheprovider
+```
+
+**第二种**，在 main 函数中运行 pytest，提供的接口是 `pytest.main()`，该方法接收一个参数数组。这样做的好处是可以在 PyCharm 等 IDE 中直接 run 或者 debug 调试，也可以方便地控制测试的粒度，譬如只跑某个测试方法或者某个测试类（命令行通过参数也可以限定）。除了 pytest，目前 PyCharm 2020 版本集成的测试工具还包括 原生的 unittest、Nosetests 以及 Twisted Trial。
+
+```python
+import pytest
+
+class TestClass:
+    def test_one(self):
+        assert 1 + 1 == 2
+
+if __name__ == "__main__":
+    pytest.main(['-p', 'no:cacheprovider'])
+```
+
+如果测试均通过了，打印结果如下图所示，以 `.` 代表文件中成功通过的测试方法，右侧的百分比代表的是测试进度，即已跑完的测试占总测试比例。
+
+```
+============================= test session starts ==============================
+platform darwin -- Python 3.8.6, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
+rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning-lecture/lecture2
+collected 4 items
+
+test_example.py ...                                                      [ 75%]
+vector_test.py .                                                         [100%]
+
+============================== 4 passed in 0.01s ===============================
+```
+
+如果某个测试方法未通过（断言报错），pytest 会提示你具体的出错位置，方便定位问题。
+
+```
+=================================== FAILURES ===================================
+____________________ TestVector.test_should_print_correctly ____________________
+
+self = <vector_test.TestVector object at 0x110e15eb0>
+
+    def test_should_print_correctly(self):
+        v1 = Vector()
+>       assert str(v1) == 'Vector(0,)'
+E       AssertionError: assert 'Vector(0)' == 'Vector(0,)'
+E         - Vector(0,)
+E         ?         -
+E         + Vector(0)
+```
+
+**关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
 
 # Lecture 2
 
