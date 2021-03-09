@@ -1,33 +1,28 @@
-import pytest
 from collections.abc import Sequence
 from collections.abc import Iterator
 
 
-class Foo:
+class SeqDuck:
     def __getitem__(self, pos):
         return range(3)[pos]
 
     def __len__(self):
         return 3
 
-    def __contains__(self, item): ...
 
-    def __reversed__(self): ...
+class IterDuck:
+    def __iter__(self): ...
 
-
-class Bar:
-    def __iter__(self):
-        pass
-
-    def __next__(self):
-        pass
+    def __next__(self): ...
 
 
 class TestDuckType:
-    def test_should_(self):
-        assert isinstance(Bar(), Iterator)
-        assert not isinstance(Foo(), Sequence)
+    def test_should_treat_iterduck_as_iterator(self):
+        assert isinstance(IterDuck(), Iterator)
+        assert not isinstance(SeqDuck(), Sequence)
 
-
-if __name__ == "__main__":
-    pytest.main(['-p', 'no:cacheprovider'])
+    def test_should_seqduck_support_iter_with_getitem_method(self):
+        seq = SeqDuck()
+        assert 2 in seq
+        for i in seq:
+            assert seq[i] == i
