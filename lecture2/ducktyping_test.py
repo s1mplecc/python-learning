@@ -11,17 +11,19 @@ class SeqDuck:
 
 
 class IterDuck:
-    def __iter__(self): ...
+    def __iter__(self):
+        return self
 
-    def __next__(self): ...
+    def __next__(self):
+        return 1
 
 
 class TestDuckType:
-    def test_should_treat_iterduck_as_iterator(self):
+    def test_should_treat_iter_duck_typing_as_iterator(self):
         assert isinstance(IterDuck(), Iterator)
         assert not isinstance(SeqDuck(), Sequence)
 
-    def test_should_seqduck_support_iter_with_getitem_method(self):
+    def test_should_seq_duck_typing_support_iter_with_getitem_method(self):
         seq = SeqDuck()
         assert 2 in seq
         for i in seq:
