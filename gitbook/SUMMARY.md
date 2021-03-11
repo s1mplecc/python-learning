@@ -25,8 +25,6 @@
 * [第三章](lecture-3/README.md)
   * [函数是一等公民](lecture-3/han-shu-shi-yi-deng-gong-min.md)
   * [闭包](lecture-3/bi-bao.md)
-  * [装饰器](lecture-3/zhuang-shi-qi/README.md)
-    * [类装饰器](lecture-3/zhuang-shi-qi/lei-zhuang-shi-qi.md)
-    * [延伸：面向切面编程](lecture-3/zhuang-shi-qi/yan-shen-mian-xiang-qie-mian-bian-cheng.md)
+  * [装饰器](lecture-3/zhuang-shi-qi.md)
 * [第四章](di-si-zhang.md)
 
