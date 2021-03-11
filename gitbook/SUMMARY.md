@@ -1,6 +1,6 @@
 # Table of contents
 
-* [index](README.md)
+* [全书总览](README.md)
 * [Lecture 1](lecture-1/README.md)
   * [环境准备](lecture-1/huan-jing-zhun-bei/README.md)
     * [Python 版本](lecture-1/huan-jing-zhun-bei/python-ban-ben.md)
