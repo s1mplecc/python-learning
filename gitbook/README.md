@@ -1,4 +1,6 @@
-# 前言
+# 全书总览
+
+## 前言
 
 在写该系列时我正在阅读《流畅的 Python》这本书，这本书作为 Python 进阶的必读书物确实名副其实，它不仅囊括了 Python 的诸多特性，包括一些 Python 独特的高级特性，更重要的是，它为我们展示了一种 Python 的设计理念，一种与我之前接触的 Java OOP 不尽相同的设计思想。在面向对象语言中，非常强调对象的类型，一切行为都是通过对象之间的相互协作完成的。Python 虽然也是一门面向对象语言，但它却将这种类型的限定模糊了，最为典型的就是 Python 中的“**鸭子类型**”：只要表现的像一个序列，就可以对它进行迭代操作。究其根本原因，是因为 Python 内置了许多特殊方法或称为魔法方法（magic methods），这种设计显然与 Java 纯面向对象截然不同。
 
@@ -6,59 +8,59 @@
 
 当然，“光看不练假把式”，最开始的时候，我只是在命令行中去验证一些 Python 特性，随后我意识到这远远不够，为什么不将学习中的零碎知识点加以整理做成一个系列呢？于是，该系列诞生了。由于知识点的离散性，所以对 Lecture 的划分就显得有些随心所欲，我尽量在目录中将知识点的名称罗列出来。
 
-代码已经托管到 Github 上，链接：https://github.com/s1mplecc/python-learning-lectures
+代码已经托管到 Github 上，链接：[https://github.com/s1mplecc/python-learning-lectures](https://github.com/s1mplecc/python-learning-lectures)
 
 本系列教程的工作环境：
 
-- 系统版本：Mac OS 10.14
-- 命令行工具：Terminal + Zsh
-- 开发工具：PyCharm Professional 2020.3
-- Python 版本：3.8.6
+* 系统版本：Mac OS 10.14
+* 命令行工具：Terminal + Zsh
+* 开发工具：PyCharm Professional 2020.3
+* Python 版本：3.8.6
 
-# 目录
+## 目录
 
-* [Lecture 1](#lecture-1)
-  * [环境准备](#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87)
-    * [Python 版本](#python-%E7%89%88%E6%9C%AC)
-    * [依赖管理](#%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86)
-    * [环境隔离](#%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB)
-  * [Python 编码规范](#python-%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83)
-    * [Python 之禅](#python-%E4%B9%8B%E7%A6%85)
-    * [Python 风格指导](#python-%E9%A3%8E%E6%A0%BC%E6%8C%87%E5%AF%BC)
-  * [如何阅读 Python 源码](#%E5%A6%82%E4%BD%95%E9%98%85%E8%AF%BB-python-%E6%BA%90%E7%A0%81)
-    * [函数注解](#%E5%87%BD%E6%95%B0%E6%B3%A8%E8%A7%A3)
-    * [类型提示](#%E7%B1%BB%E5%9E%8B%E6%8F%90%E7%A4%BA)
-    * [\.pyi 存根文件](#pyi-%E5%AD%98%E6%A0%B9%E6%96%87%E4%BB%B6)
-    * [PyCharm 高效阅读源码](#pycharm-%E9%AB%98%E6%95%88%E9%98%85%E8%AF%BB%E6%BA%90%E7%A0%81)
-  * [单元测试](#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
-    * [使用 pytest 编写测试用例](#%E4%BD%BF%E7%94%A8-pytest-%E7%BC%96%E5%86%99%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B)
-* [Lecture 2](#lecture-2)
-  * [Python 是动态强类型语言](#python-%E6%98%AF%E5%8A%A8%E6%80%81%E5%BC%BA%E7%B1%BB%E5%9E%8B%E8%AF%AD%E8%A8%80)
-    * [强弱类型](#%E5%BC%BA%E5%BC%B1%E7%B1%BB%E5%9E%8B)
-  * [鸭子类型](#%E9%B8%AD%E5%AD%90%E7%B1%BB%E5%9E%8B)
-    * [序列协议](#%E5%BA%8F%E5%88%97%E5%8D%8F%E8%AE%AE)
-  * [特殊方法](#%E7%89%B9%E6%AE%8A%E6%96%B9%E6%B3%95)
-    * [\_\_new\_\_ &amp; \_\_init\_\_](#__new__--__init__)
-    * [\_\_str\_\_ &amp; \_\_repr\_\_](#__str__--__repr__)
-    * [\_\_call\_\_](#__call__)
-    * [\_\_add\_\_ 与重载运算符](#__add__-%E4%B8%8E%E9%87%8D%E8%BD%BD%E8%BF%90%E7%AE%97%E7%AC%A6)
-* [Lecture 3](#lecture-3)
-  * [函数是一等公民](#%E5%87%BD%E6%95%B0%E6%98%AF%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91)
-  * [闭包](#%E9%97%AD%E5%8C%85)
-  * [装饰器](#%E8%A3%85%E9%A5%B0%E5%99%A8)
-    * [类装饰器](#%E7%B1%BB%E8%A3%85%E9%A5%B0%E5%99%A8)
-    * [延伸：面向切面编程](#%E5%BB%B6%E4%BC%B8%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B)
-* [Lecture 4](#lecture-4)
-  * [生成式表达式](#%E7%94%9F%E6%88%90%E5%BC%8F%E8%A1%A8%E8%BE%BE%E5%BC%8F)
-  * [\* 和 \*\* 运算符](#-%E5%92%8C--%E8%BF%90%E7%AE%97%E7%AC%A6)
+* [Lecture 1](./#lecture-1)
+  * [环境准备](./#环境准备)
+    * [Python 版本](./#python-版本)
+    * [依赖管理](./#依赖管理)
+    * [环境隔离](./#环境隔离)
+  * [Python 编码规范](./#python-编码规范)
+    * [Python 之禅](./#python-之禅)
+    * [Python 风格指导](./#python-风格指导)
+  * [如何阅读 Python 源码](./#如何阅读-python-源码)
+    * [函数注解](./#函数注解)
+    * [类型提示](./#类型提示)
+    * [.pyi 存根文件](./#pyi-存根文件)
+    * [PyCharm 高效阅读源码](./#pycharm-高效阅读源码)
+  * [单元测试](./#单元测试)
+    * [使用 pytest 编写测试用例](./#使用-pytest-编写测试用例)
+* [Lecture 2](./#lecture-2)
+  * [Python 是动态强类型语言](./#python-是动态强类型语言)
+    * [强弱类型](./#强弱类型)
+  * [鸭子类型](./#鸭子类型)
+    * [序列协议](./#序列协议)
+  * [特殊方法](./#特殊方法)
+    * [\_\_new\_\_ & \_\_init\_\_](./#__new__--__init__)
+    * [\_\_str\_\_ & \_\_repr\_\_](./#__str__--__repr__)
+    * [\_\_call\_\_](./#__call__)
+    * [\_\_add\_\_ 与重载运算符](./#__add__-与重载运算符)
+* [Lecture 3](./#lecture-3)
+  * [函数是一等公民](./#函数是一等公民)
+  * [闭包](./#闭包)
+  * [装饰器](./#装饰器)
+    * [类装饰器](./#类装饰器)
+    * [延伸：面向切面编程](./#延伸面向切面编程)
+* [Lecture 4](./#lecture-4)
+  * [生成式表达式](./#生成式表达式)
+  * [\* 和 \*\* 运算符](./#-和--运算符)
 
-# Lecture 1
+## Lecture 1
 
 作为系列学习的开始，我一直在思考应当安排哪些内容，考虑到动手实践的重要性，最终我安排了以下这四个章节。**环境准备**，将引导你搭建一个自己的 Python 开发环境；**编码规范**以及**阅读源码**章节，我相信这对于任何语言的学习和实践都具有重要意义，阅读源码教会你拿到一份源码该如何下手，遵循编码规范则让你编写出令人赏心悦目的代码；以及最后的**单元测试**章节，我将其作为验证语言特性的最佳工具，也是作为特性学习的正式开始。
 
-## 环境准备
+### 环境准备
 
-### Python 版本
+#### Python 版本
 
 目前 Python 主要活跃的有 Python 2.x 和 Python 3.x 两个大版本，与 C++ 和 Java 这种向后兼容的语言不同，Python 的两个版本互不兼容。舍弃兼容性是一种设计上的取舍，在我看来 Python 这种尤为注重“简约”的语言，敢于大胆摒弃一些有设计缺陷的旧包袱，从而拥抱新特性的作风，未尝不是一种 Pythonic 的体现，很大程度上避免了走向像 C++ 一样越来越臃肿晦涩的道路。
 
@@ -66,7 +68,7 @@ Python 核心团队已于 2019 年正式宣布将在 2020 年停止对 Python2 �
 
 一般较新的 Linux 发行版已经预装了 Python2 和 Python3，如果没有，也可以通过各自的包管理器进行安装和更新。Mac OS 环境下可以通过 Homebrew 工具来安装 Python，可以附加 `@ + 版本号` 安装指定版本。在一般情况下（不手动修改软链接），命令行中的 `python` 通常是 python 2.7 或其旧版本的别名，`python3` 才指代 Python3 版本，可以通过 `--version` 参数来查看安装的具体版本。由于两个版本互不兼容，在命令行运行 Python 脚本前需要先确定其所用的 Python 版本。
 
-```sh
+```bash
 ➜ brew install python  # brew install python@2.7
 ➜ python --version 
 Python 2.7.10
@@ -105,20 +107,20 @@ else:
 
 一般情况下，除非你开发的是供他人使用的第三方库，并不需要你在运行时显式判断版本。一方面是版本对于你是可控的，另一方面是如果滥用版本判断会降低代码的整洁性。如果不得不这么做，可以像内置模块 builtins.pyi 一样在存根文件中统一进行处理。
 
-### 依赖管理
+#### 依赖管理
 
-> **pip** - The Python Package Installer. You can use pip to install packages from the Python Package Index (PyPI) and other indexes.
+> **pip** - The Python Package Installer. You can use pip to install packages from the Python Package Index \(PyPI\) and other indexes.
 
 [pip](https://pip.pypa.io/en/stable/) 是 Python 的包安装和管理工具，类似于 npm 之于 JavaScript。Python 3.x 以上的发行版本中都是自带 pip 的。在使用之前先确定 pip 的版本，Python3 中的 pip 是 pip3 的别名，但如果安装了 Python2 的 pip，那么在为 Python3 项目安装依赖时请使用 pip3 命令，因为这两个命令会将依赖安装在不同的目录下。
 
-```sh
+```bash
 ➜ pip --version
 pip 20.3.3 from /usr/local/lib/python3.8/site-packages/pip (python 3.8)
 ```
 
 常见的 pip 命令使用可以查阅官方文档，或者 `pip -h` 查阅帮助文档。与 JavaScript 的 package.json 一样，Python 也提供了统一管理依赖的配置文件 **requirements.txt**。文件中可以指定依赖的版本号，如果缺省则默认安装最新依赖。
 
-```
+```text
 ####### example-requirements.txt #######
 beautifulsoup4              # Requirements without Version Specifiers
 docopt == 0.6.1             # Version Matching. Must be version 0.6.1
@@ -129,13 +131,13 @@ Mopidy-Dirble ~= 1.1        # Compatible release. Same as >= 1.1, == 1.*
 
 使用 `-r` 参数指定通过 requirements.txt 文件安装依赖：
 
-```sh
+```bash
 pip install -r requirements.txt
 ```
 
 有时我们需要进行项目迁移，比如将本地项目部署至服务器，为了保证重新安装依赖时不影响项目的正常运行，可以使用 freeze 指令将所需的依赖和具体版本号写入 requirements.txt 文件中，再一次性安装所有依赖。
 
-```sh
+```bash
 ➜ pip freeze > requirements.txt
 ➜ cat requirements.txt 
 certifi==2020.11.8
@@ -144,17 +146,17 @@ numpy==1.19.4
 six==1.15.0
 ```
 
-### 环境隔离
+#### 环境隔离
 
-在 JavaScript 中，使用 npm 安装依赖会在当前目录下生成一个 node_modules 文件夹，依赖会被安装在这个文件夹中。除非指定 `-g` 或 `--global` 参数，将会在全局环境中安装依赖，在 Mac OS 或 Linux 系统中一般会被安装到 `/usr/local/lib/node_modules` 目录下。这样做的好处是将全局环境与局部环境隔离，避免依赖冲突，尤其是两个项目依赖同一个库的不同版本时。
+在 JavaScript 中，使用 npm 安装依赖会在当前目录下生成一个 node\_modules 文件夹，依赖会被安装在这个文件夹中。除非指定 `-g` 或 `--global` 参数，将会在全局环境中安装依赖，在 Mac OS 或 Linux 系统中一般会被安装到 `/usr/local/lib/node_modules` 目录下。这样做的好处是将全局环境与局部环境隔离，避免依赖冲突，尤其是两个项目依赖同一个库的不同版本时。
 
 Python 中也有类似的问题，《Effective Python -- 编写高质量Python代码的59个有效方法》一书中的协作开发章节就提到：**使用虚拟环境隔离项目**。问题在于，通过 pip 命令安装的依赖是全局性的，这意味着这些安装好的模块可能会影响系统内的所有 Python 程序。全局依赖会被安装在特定 Python 版本的目录下，如 `/usr/local/lib/python3.8/site-packages`，对于使用 Python 3.8 的所有项目来说依赖是共享的。
 
 为此，Python 提供了一种解决方案，类似于 JavaScript 的局部环境，隔离出一个单独的 Python 局部环境，这种方案的典型就是 venv。
 
-#### venv
+**venv**
 
-> **venv** (for Python 3) and **virtualenv** (for Python 2) allow you to manage separate package installations for different projects. If you are using Python 3.3 or newer, the venv module is the preferred way to create and manage virtual environments. venv is included in the Python standard library and requires no additional installation.
+> **venv** \(for Python 3\) and **virtualenv** \(for Python 2\) allow you to manage separate package installations for different projects. If you are using Python 3.3 or newer, the venv module is the preferred way to create and manage virtual environments. venv is included in the Python standard library and requires no additional installation.
 
 从 Python 2.7 开始，Python 社区开发了一些较底层的创建**虚拟环境**（virtual environment）的工具，在 Python 2.7 中这个工具叫做 virtualenv，这是一个三方工具，需要使用 pip 安装。而《Effective Python》一书中提到的工具 pyvenv 是 Python 3.3 所引入的，但由于一些缺陷在 Python 3.6 中已被弃用。取而代之的是 Python 3.5 引入的内置模块 venv，可以通过 `python3 -m venv` 使用这个命令。
 
@@ -162,7 +164,7 @@ Python 中也有类似的问题，《Effective Python -- 编写高质量Python�
 
 首先创建一个空项目 myproject，在该目录下执行 `python3 -m venv venv` 命令，第二个 venv 是创建的虚拟环境的文件夹名，系统中的环境会被拷贝到该目录下，包括 bin 中的 pip 和 python 命令，而 pip 安装的依赖会存放在 lib 目录中。
 
-```sh
+```bash
 ➜ mkdir myproject; cd myproject
 ➜ python3 -m venv venv
 ➜ ls -F
@@ -171,9 +173,9 @@ venv/
 bin/        include/    lib/        pyvenv.cfg
 ```
 
-为了启用这套虚拟环境需要先运行**激活**脚本，启用后会发现命令行多了 `(venv)`  前缀，这明确的提示了开发者现在处于虚拟环境中。默认情况下虚拟环境只安装了 pip 和 setuptools 两个初始依赖，此时的环境已经独立于全局环境，全局依赖不会影响到此项目。pip 和 python3 命令都指向虚拟环境 bin 目录下的命令。
+为了启用这套虚拟环境需要先运行**激活**脚本，启用后会发现命令行多了 `(venv)` 前缀，这明确的提示了开发者现在处于虚拟环境中。默认情况下虚拟环境只安装了 pip 和 setuptools 两个初始依赖，此时的环境已经独立于全局环境，全局依赖不会影响到此项目。pip 和 python3 命令都指向虚拟环境 bin 目录下的命令。
 
-```sh
+```bash
 ➜ source venv/bin/activate
 (venv) ➜ pip list    
 Package    Version
@@ -188,7 +190,7 @@ Python 3.8.6
 
 退出虚拟环境时使用 `deactivate` 命令。
 
-```sh
+```bash
 (venv) ➜ deactivate
 ➜ which python3
 /usr/local/bin/python3
@@ -196,28 +198,28 @@ Python 3.8.6
 
 为了代替手动的在命令行创建虚拟环境，PyCharm 集成了 virtualenv 工具，并且官方文档已经标明：Python 3.3 版本之前使用第三方的 virtualenv 工具，Python 3.3 之后使用内置的 venv 模块。在新建项目时可以选择 New Virtualenv Environment 自动创建虚拟环境。
 
-有了虚拟环境，我们就可以使用 `pip freeze` 命令和 requirements.txt 文件很方便的重现一套环境。此外，在使用 venv 时，应当尽量避免移动环境目录，包括重命名项目名称，因为所有的路径（包括 python3 命令所指向的路径），都以硬编码的形式写在了安装目录中，更改目录路径将导致环境失效。解决办法是修改 `bin/active` 脚本中的 VIRTUAL_ENV 路径值，并重新激活。
+有了虚拟环境，我们就可以使用 `pip freeze` 命令和 requirements.txt 文件很方便的重现一套环境。此外，在使用 venv 时，应当尽量避免移动环境目录，包括重命名项目名称，因为所有的路径（包括 python3 命令所指向的路径），都以硬编码的形式写在了安装目录中，更改目录路径将导致环境失效。解决办法是修改 `bin/active` 脚本中的 VIRTUAL\_ENV 路径值，并重新激活。
 
-```sh
+```bash
 # active
 VIRTUAL_ENV="/Users/s1mple/Downloads/myproject/venv"
 ```
 
-#### Anaconda
+**Anaconda**
 
 如果你觉得 pip + venv 的方式太过底层，也可以使用 Anaconda。Anaconda 是一个更高层次的包管理器和环境管理器，它依托于 conda 之上开发的，conda 可以理解为整合了 pip 和 venv 的功能，区别在于 conda 是跨平台和不限语言的（支持 R 语言）。PyCharm 也对 conda 提供了支持，可以直接通过 conda 创建虚拟环境。
 
 Anaconda 的下载文件较大（500MB），不仅自带 Python 还附带了许多常用数据科学包，已经成为了数据科学方向百宝箱式的存在。Anaconda 也提供可视化界面。总的来说，对于不太熟悉底层操作的数据分析师来说，Anaconda 易于上手体验友好。但对于软件开发来说，Anaconda 显得过于臃肿，这也是我不选择使用它的原因。现如今的 Python 环境支持官方库已经做的很好，如果不是做数据科学方向的，建议使用原生的 pip + venv。
 
-## Python 编码规范
+### Python 编码规范
 
 > PEP，全称 Python Enhancement Proposals，译为 Python 增强提案。PEP 已经成为 Python 发布新特性的主要机制，它会收集社区对 Python 的改进意见，经过核心开发者的审查和认可最终形成提案向公众公示。[PEP 的官网首页](https://www.python.org/dev/peps/) 也是 PEP 0 的地址，在这里官方列举了所有的 PEP 的索引，你可以按序号、标题和类型进行检索。
 
-### Python 之禅
+#### Python 之禅
 
 Python 开发者喜欢用 “Pythonic” 这个单词来形容符合 Python 编码风格的代码。这种风格既不是严格的规范也不是编译器强加给开发者的规则，而是大家在使用 Python 语言协同工作的过程中逐渐形成的习惯。要记住：**Python 开发者不喜欢复杂的事物，他们崇尚直观、简洁而又易读的代码**。为此，Python 语言的早期贡献者 Tim Peters 提出了 [PEP 20 -- The Zen of Python](https://www.python.org/dev/peps/pep-0020/)，译为 Python 之禅，提出了共计 19 条 Python 编码的指导性原则。这已经作为一个彩蛋加入到 Python 标准库中，你可以在 Python 交互式命令行中敲入 `import this` 查看。
 
-```
+```text
 >>> import this
 The Zen of Python, by Tim Peters
 
@@ -244,21 +246,21 @@ Namespaces are one honking great idea -- let's do more of those!
 
 这 19 条指导思想强调了代码简约可读的重要性，其中的大多数条目不仅仅适用于 Python，也适用于任何一门其他语言。
 
-### Python 风格指导
+#### Python 风格指导
 
 除此之外，[PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/) 也是每个 Python 程序员应当阅读的，相较于 Python 之禅它提出了更为细致的建议，目的是让 Python 程序员遵循一致的编码风格。PEP 8 中的大部分都能在 Pycharm IDE 中找到智能提示，缩进、空格与空行也可以通过代码格式化快捷键（Reformat Code）来一键规范化，在 Mac OS 中默认快捷键为 `Cmd + Alt + L`，Windows 中为 `Ctrl + Alt + L`。如果你不使用 PyCharm，也可以安装 Pylint，这是一款 Python 源码静态分析工具，可以自动检测代码是否符合 PEP 8 风格指南。
 
-#### 命名规范
+**命名规范**
 
 这里，我想强调一下 Python 中的命名规范。PEP 8 提倡采用不用的命名风格来区分 Python 语言中的不同角色：
 
-- 文件名（模块名）使用小写字母，单词间以下划线连接，如 `base_futures.py`；私有模块使用单个下划线开头，如 `_collections_abc.py`；
-- 函数、变量及属性名，使用小写字母，单词间以下划线连接，如 `dict_keys`；
-- 受保护的属性和函数（子类可以访问），使用单个下划线开头，如 `_protected_method`；
-- 私有的属性和函数（子类也不能访问），使用两个下划线开头，如 `__private_method`；
-- 类与异常，以每个单词首字母大写来命名，如 `BaseHandler`、`TypeError`；
-- 模块级别的常量，全部用大写字母，单词间以下划线连接，如 `STDIN_FILENO`；
-- 类中的实例方法（instance method），首个参数命名为 `self` 表示对象自身；类方法（class method），首个参数命名为 `cls` 表示类自身。
+* 文件名（模块名）使用小写字母，单词间以下划线连接，如 `base_futures.py`；私有模块使用单个下划线开头，如 `_collections_abc.py`；
+* 函数、变量及属性名，使用小写字母，单词间以下划线连接，如 `dict_keys`；
+* 受保护的属性和函数（子类可以访问），使用单个下划线开头，如 `_protected_method`；
+* 私有的属性和函数（子类也不能访问），使用两个下划线开头，如 `__private_method`；
+* 类与异常，以每个单词首字母大写来命名，如 `BaseHandler`、`TypeError`；
+* 模块级别的常量，全部用大写字母，单词间以下划线连接，如 `STDIN_FILENO`；
+* 类中的实例方法（instance method），首个参数命名为 `self` 表示对象自身；类方法（class method），首个参数命名为 `cls` 表示类自身。
 
 有几点需要说明的是，Python 中**下划线前缀仅仅是个约定**，由于 Python 没有 public、protected、private 等访问权限控制关键字，只能以有没有下划线开头这种约定俗成的规范告诉程序员这个变量或函数的范围，注意这并不是强制约束。即使函数以下划线开头，在导入模块后仍能够通过 dot 运算符直接访问。
 
@@ -270,7 +272,7 @@ This is a external_func.
 This is a _internal_func.
 ```
 
-但需要注意的是，如果通过 * 通配符导入的模块，单下划线以及双下划线开头的函数和属性并不会被导入到当前模块中，除非导入模块显式定义了包含这些函数和属性的 `__all__` 列表（但通常不会这么做）。此外，也不建议通过通配符导入模块，应当按照最小导入原则，显式的导入需要用到的函数和属性。
+但需要注意的是，如果通过 \* 通配符导入的模块，单下划线以及双下划线开头的函数和属性并不会被导入到当前模块中，除非导入模块显式定义了包含这些函数和属性的 `__all__` 列表（但通常不会这么做）。此外，也不建议通过通配符导入模块，应当按照最小导入原则，显式的导入需要用到的函数和属性。
 
 ```python
 >>> from another import *
@@ -306,7 +308,7 @@ tkinter.Toplevel(master, class_='ClassName')
 
 另外，Python 在维持语义清晰的原则上为了保证简洁性，一些**简短的介词和连词间会省略下划线**，并没有严格的按照单词间下划线连接，而是直接拼接，比如 `isinstance`、`__setattr__` 和 `getstate`。
 
-## 如何阅读 Python 源码
+### 如何阅读 Python 源码
 
 阅读源码是每个程序员都应当具备的技能，阅读源码不仅能帮助你理解一个模块实现的细节，也能让你从优秀的源码中汲取经验，遵循更好的编码规范，编写出更 Pythonic 的代码。但不可否认的是，阅读源码需要一定的编码功底，盲目的阅读并不能取得应有的效果。在阅读源码之前我们要明白阅读的目的，如果是想了解一个模块的实现细节自不必多说，但如果是想提高自己的 Python 编码水平，那么就应该从 Python 标准库以及一些优秀的第三方开源代码下手。
 
@@ -314,7 +316,7 @@ tkinter.Toplevel(master, class_='ClassName')
 
 抛开这些问题不谈，本篇我想结合我自己在阅读标准库源码（主要是 typing 模块和 re 模块）时的一点理解，介绍一些阅读源码前需要掌握的先验知识，以及如何结合开发工具在 PyCharm IDE 中高效地阅读源码。让我们先从 Python 代码的类型提示开始。
 
-### 函数注解
+#### 函数注解
 
 > **PEP 3107 -- Function Annotations** : Python Version 3.0, Created Time 2-Dec-2006. This PEP introduces a syntax for adding arbitrary metadata annotations to Python functions.
 
@@ -327,7 +329,7 @@ def foo(a: expression, b: expression = 5) -> expression:
     ...
 ```
 
-函数声明中的各个参数可以在 `:` 之后添加注解表达式。如果参数有默认值，表达式后可以跟 `=` 指定默认值，且与常规函数声明一样，指定默认值参数要出现在无默认值参数之后。注解表达式最常使用的是类型（如 str 或 int），也可以是一个字符串（如 'int > 0'）。如果想注解返回值，在 `)` 与 `:` 之间添加 `->` 和一个表达式，表达式可以是任意类型，如果函数无返回值则为 None。
+函数声明中的各个参数可以在 `:` 之后添加注解表达式。如果参数有默认值，表达式后可以跟 `=` 指定默认值，且与常规函数声明一样，指定默认值参数要出现在无默认值参数之后。注解表达式最常使用的是类型（如 str 或 int），也可以是一个字符串（如 'int &gt; 0'）。如果想注解返回值，在 `)` 与 `:` 之间添加 `->` 和一个表达式，表达式可以是任意类型，如果函数无返回值则为 None。
 
 本质上来说，PEP 3107 只是一种前导的语法规范，不对注解任何实质处理，你可以将其理解为官方规定的函数声明的注释。换句话说，**注解只是元数据**，Python 解释器对其不做检查、不做强制、不做验证。Python 对注解所做的唯一的事情，就是将它们存储在函数的 `__annotations__` 属性中：
 
@@ -343,13 +345,13 @@ def foo(a: expression, b: expression = 5) -> expression:
 
 **延伸**：Java 中的注解也称为 Annotation，使用 `@` 符号标注，本质上也是元数据，本身 Java 解释器不会对其做任何处理，只有结合 Java 运行时的反射（getAnnotation 方法）才能获取注解内容从而针对性地制定处理逻辑，这在一些框架例如 Spring 中使用颇多。这与 Python 中的注解是否存在异曲同工之处呢？我们有理由相信，Python 中的静态类型检查工具也是获取了函数的 `__annotations__` 属性从而进行处理。
 
-### 类型提示
+#### 类型提示
 
-> **PEP 484 -- Type Hints** : Python Version 3.5, Created Time 29-Sep-2014. This PEP aims to provide a standard syntax for type annotations, opening up Python code to easier static analysis and refactoring, potential runtime type checking, and (perhaps, in some contexts) code generation utilizing type information.
+> **PEP 484 -- Type Hints** : Python Version 3.5, Created Time 29-Sep-2014. This PEP aims to provide a standard syntax for type annotations, opening up Python code to easier static analysis and refactoring, potential runtime type checking, and \(perhaps, in some contexts\) code generation utilizing type information.
 
 在 PEP 3107 提案提出后，已经有一些第三方工具结合函数注解做了静态类型检查方面的工作，其中被采用较多的就是 Jukka Lehtosalo 开发的 mypy 项目。PEP 484 提案受 mypy 的强烈启发（Jukka 也参与了提案的制订），规定了如何给 Python 代码添加**类型提示（Type Hints）**，主要方式就是使用注解，以及引入了一个新模块：**typing 模块**。
 
-#### typing 模块
+**typing 模块**
 
 为了给 Python 静态类型检查提供统一的命名空间，标准库以渐进定型（gradual typing）的方式引入名为 [typing](https://docs.python.org/3/library/typing.html) 的新模块，新模块不会影响现有程序的正常运行，只会对不规范的类型作出提示。
 
@@ -378,9 +380,9 @@ NameError: name 'x' is not defined
 {'a': <class 'int'>, 'return': <class 'str'>}
 ```
 
-#### 变量注解
+**变量注解**
 
-> **PEP 526 -- Syntax for Variable Annotations** : Python Version 3.6, Created Time 09-Aug-2016. This PEP aims at adding syntax to Python for annotating the types of variables (including class variables and instance variables), instead of expressing them through comments.
+> **PEP 526 -- Syntax for Variable Annotations** : Python Version 3.6, Created Time 09-Aug-2016. This PEP aims at adding syntax to Python for annotating the types of variables \(including class variables and instance variables\), instead of expressing them through comments.
 
 为了丰富类型提示的功能，Python 随即在 3.6 版本中引入了**变量注解（Variable Annotations）**，用于规定变量的类型。与函数注解相同，变量注解也只是元数据，Python 解释器不对其做任何处理，仅供框架和工具做类型检查。语法上变量注解与函数注解类似，使用 `:` 后接参数类型。
 
@@ -413,9 +415,9 @@ class Starship:
 {'a': <class 'int'>, 'b': <class 'str'>}
 ```
 
-#### 何时使用类型提示
+**何时使用类型提示**
 
-PEP 484 中强调了 Python 将继续维持作为动态语言的特性，从来没有将类型提示强制化或是惯例化的想法。那么何时采用类型提示呢？一般而言，如果你开发的是供他人使用的第三方库（尤其是在  PyPI 上发布的库中），或是在一个多人协作的稍大项目中，推荐使用类型提示。一方面，这会帮助使用库的用户正确地调用接口。另一方面，类型提示也可以帮助理解类型是如何在代码中传播的。
+PEP 484 中强调了 Python 将继续维持作为动态语言的特性，从来没有将类型提示强制化或是惯例化的想法。那么何时采用类型提示呢？一般而言，如果你开发的是供他人使用的第三方库（尤其是在 PyPI 上发布的库中），或是在一个多人协作的稍大项目中，推荐使用类型提示。一方面，这会帮助使用库的用户正确地调用接口。另一方面，类型提示也可以帮助理解类型是如何在代码中传播的。
 
 Bernat Gabor 认为类型提示与单元测试重要性一致，本质上都是为了验证你的代码库的输入输出类型，只是表现形式不同。在他的文章 [the state of type hints in Python](https://www.bernat.tech/the-state-of-type-hints-in-python/) 的最后总结中提到：**只要值得编写单元测试，就应该添加类型提示**，哪怕代码只有十行，只要你日后需要维护它。所以他给出的建议是，在编写单元测试的同时添加类型提示。虽然这会添加额外的代码量，但为了代码平稳工作值得付出这个代价，尤其是发生代码变更时。
 
@@ -427,11 +429,11 @@ def foo(x: AnyStr, y: AnyStr = ...) -> AnyStr: ...
 stream: IO[str]
 ```
 
-### .pyi 存根文件
+#### .pyi 存根文件
 
 由于 Python 是动态语言，不对类型做强制约束，所以 IDE 在类型检查、类型推断、代码补全以及重构等方面必然不如 Java 等静态语言来的方便。**存根文件是包含类型提示信息的文件**，运行时不会用到，而是**提供给第三方工具做静态类型检查和类型推断**，这方面 PyCharm 做的很好。
 
-在 PyCharm 中，如果某一行的左边有 * 号标识，则说明这一行（可以是类、属性或函数）在存根文件中有定义，你可以点击 * 号跳转到该文件对应的存根文件，通常是存放在 Python 库文件的 Typeshed Stubs 目录中，文件名以 `.pyi` 后缀结尾。同时，存根文件也是 GitHub 上一个单独的项目，项目地址：https://github.com/python/typeshed ，Python 的标准库以及内置 builtins 存根可以在该项目的 stdlib 目录下找到。
+在 PyCharm 中，如果某一行的左边有  _号标识，则说明这一行（可以是类、属性或函数）在存根文件中有定义，你可以点击_  号跳转到该文件对应的存根文件，通常是存放在 Python 库文件的 Typeshed Stubs 目录中，文件名以 `.pyi` 后缀结尾。同时，存根文件也是 GitHub 上一个单独的项目，项目地址：[https://github.com/python/typeshed](https://github.com/python/typeshed) ，Python 的标准库以及内置 builtins 存根可以在该项目的 stdlib 目录下找到。
 
 我们来看看 Python 正则库 re 的存根文件和源文件：
 
@@ -441,7 +443,7 @@ stream: IO[str]
 def compile(pattern: AnyStr, flags: _FlagsType = ...) -> Pattern[AnyStr]: ...
 @overload
 def compile(pattern: Pattern[AnyStr], flags: _FlagsType = ...) -> Pattern[AnyStr]: ...
-  
+
 # re.py
 def compile(pattern, flags=0):
     "Compile a regular expression pattern, returning a Pattern object."
@@ -466,7 +468,7 @@ def _compile(pattern, flags):
 
 在最新的 PyCharm 2020.3 版本中，支持直接创建 Python stub 类型的 Python File，只需要存根文件与源文件同名，PyCharm 就会自动按照存根文件中指定的类型进行静态类型检查。并且，你也可以像 Typeshed 项目为存根文件分配单独的文件夹，具体操作详见 JetBrains 官网的 PyCharm 手册：[Python Stubs](https://www.jetbrains.com/help/pycharm/stubs.html)。
 
-### PyCharm 高效阅读源码
+#### PyCharm 高效阅读源码
 
 除了标注存根文件，PyCharm 还对子类父类方法重载进行了标注，分别用 `O↑` 表示这一行重载了父类方法，点击可以跳转到父类实现；`O↓` 表示这一行有子类重载，点击可以跳转到子类实现。其中 O 代表的是 Override 的含义。
 
@@ -481,43 +483,43 @@ class list(MutableSequence[_T], Generic[_T]):
 
 当然，如果想在 PyCharm 中高效阅读源码，需要结合快捷键来使用。这里列出一些 Mac OS 下的快捷键，Windows 下一般是将 Cmd 替换为 Ctrl，你也可以打开 PyCharm 设置自行查阅 Keymap 快捷键：
 
-| 快捷键                | 作用            | PyCharm Keymap  |
-|:--------------------|:---------------|:-----------------------------|
-| Cmd + U            | 跳转到父类实现       | Go to Super Method          |
-| Cmd + Alt + B/Left Click      | 跳转到子类实现       | Go to Implementations       |
-| Cmd + B/Left Click | 跳转到定义处或调用处    | Go to Declaration or Usages |
-| Cmd + [            | 跳转到鼠标停留的上一个位置 | Back                        |
-| Cmd + ]            | 跳转到鼠标停留的下一个位置 | Forward                     |
-| Cmd + E            | 跳转到最近浏览的文件    | Iterate Recent Files        |
-| Cmd + Shift + O    | 以文件名查询并跳转      | Go to File                  |
-| Cmd + O            | 以类名查询并跳转      | Go to Class                 |
-| Cmd + Alt + O            | 以符号查询并跳转，可以查询函数和全局变量 | Go to Symbol                |
-| 双击 Shift                 | 整合了所有查询            |                             |
-| Cmd + F                  | 搜索当前文件下内容          | Find                        |
-| Cmd + Shift + F       | 搜索项目文件中的内容      | Find in Files               |
+| 快捷键 | 作用 | PyCharm Keymap |
+| :--- | :--- | :--- |
+| Cmd + U | 跳转到父类实现 | Go to Super Method |
+| Cmd + Alt + B/Left Click | 跳转到子类实现 | Go to Implementations |
+| Cmd + B/Left Click | 跳转到定义处或调用处 | Go to Declaration or Usages |
+| Cmd + \[ | 跳转到鼠标停留的上一个位置 | Back |
+| Cmd + \] | 跳转到鼠标停留的下一个位置 | Forward |
+| Cmd + E | 跳转到最近浏览的文件 | Iterate Recent Files |
+| Cmd + Shift + O | 以文件名查询并跳转 | Go to File |
+| Cmd + O | 以类名查询并跳转 | Go to Class |
+| Cmd + Alt + O | 以符号查询并跳转，可以查询函数和全局变量 | Go to Symbol |
+| 双击 Shift | 整合了所有查询 |  |
+| Cmd + F | 搜索当前文件下内容 | Find |
+| Cmd + Shift + F | 搜索项目文件中的内容 | Find in Files |
 
 这些都是 PyCharm 中非常实用的快捷键，不管是阅读源码还是自己编码，熟悉这些快捷键有助于快速定位到某个文件，某个函数或是某个变量，从而提高我们的效率。
 
-## 单元测试
+### 单元测试
 
 我已经不止一次被强调单元测试的重要性，单元测试作为一个黑盒接受输入验证输出，可以有效的测试一个方法的健壮性。此外，我想尽量给这个学习系列带入些测试驱动的思想。所以以单元测试作为特性学习的开始，应当还算合理。一方面，熟练掌握一门语言其实是语言特性掌握的累积，为了验证一个特性而编写一个单元测试看来最适合不过了（当然可能不止需要一个单元测试）。另一方面，如果验证结果的时候还是使用一堆 print 方法，就会显得相当凌乱而且不那么专业，而通过运行测试时打印的一系列方法名，可以清楚这些模块涉及了哪些 Python 特性。
 
-### 使用 pytest 编写测试用例
+#### 使用 pytest 编写测试用例
 
 选择 pytest 作为单元测试框架，是因为它简单实用。我个人不太欣赏 Python 自带的 unittest 模块的写法，测试类需要继承一个测试基类，并且到处充斥着 `self`。而 pytest 编写的测试用例只需要符合一定的命名规范，就会被框架自动检测到并运行。此外 pytest 还重写了 assert 关键字，打印信息也更加人性化。
 
 **编写 pytest 测试用例需要符合如下规范**：
 
-- 测试文件如果不指定，必须以 `test_` 开头或结尾；
-- 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
-- 测试函数必须以 `test_` 开头；
-- 断言使用 Python 原生的 assert 关键字，pytest 框架没有提供特殊的断言方法。
+* 测试文件如果不指定，必须以 `test_` 开头或结尾；
+* 测试类必须以以 `Test` 开头，且不能含有 `__init__` 构造函数；
+* 测试函数必须以 `test_` 开头；
+* 断言使用 Python 原生的 assert 关键字，pytest 框架没有提供特殊的断言方法。
 
-需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test ` 开头的类）中的 `test_` 方法也不会被执行。
+需要注意的是，测试类不是必须的，在类之外的函数只要符合以 `test_` 开头的规范，也会被 pytest 测试框架检测到。同样，测试类中的测试方法也必须以 `test_` 开头。而非测试类（不以 `Test` 开头的类）中的 `test_` 方法也不会被执行。
 
-pytest 不包含在 Python 标准库中，需要另行安装依赖。有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。下面这条命令可以避免生成 pytest_cache 测试缓存文件。
+pytest 不包含在 Python 标准库中，需要另行安装依赖。有两种方式运行 pytest 测试。**第一种**，在命令行中使用 `pytest` 命令，可以后接文件名指定待测文件，如果不指定，将测试当前文件夹下的所有符合命名规则的文件。下面这条命令可以避免生成 pytest\_cache 测试缓存文件。
 
-```sh
+```bash
 pytest -p no:cacheprovider
 ```
 
@@ -536,7 +538,7 @@ if __name__ == "__main__":
 
 如果测试均通过了，打印结果如下图所示，以 `.` 代表文件中成功通过的测试方法，右侧的百分比代表的是测试进度，即已跑完的测试占总测试比例。
 
-```
+```text
 ============================= test session starts ==============================
 platform darwin -- Python 3.8.6, pytest-6.1.2, py-1.9.0, pluggy-0.13.1
 rootdir: /Users/s1mple/Projects/PycharmProjects/python-learning-lecture/lecture2
@@ -550,7 +552,7 @@ vector_test.py .                                                         [100%]
 
 如果某个测试方法未通过（断言报错），pytest 会提示你具体的出错位置，方便定位问题。
 
-```
+```text
 =================================== FAILURES ===================================
 ____________________ TestVector.test_should_print_correctly ____________________
 
@@ -565,11 +567,11 @@ E         ?         -
 E         + Vector(0)
 ```
 
-**关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
+**关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的 “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
 
-# Lecture 2
+## Lecture 2
 
-## Python 是动态强类型语言
+### Python 是动态强类型语言
 
 > **Dynamic programming language**: In computer science, a dynamic programming language is a class of high-level programming languages, which at runtime execute many common programming behaviours that **static programming languages perform during compilation**. These behaviors could include an extension of the program, by **adding new code, by extending objects and definitions, or by modifying the type system**.
 
@@ -601,20 +603,20 @@ Python 就是一门动态编程语言，编码时不用指定类型，且运行�
 4316579216
 ```
 
-### 强弱类型
+#### 强弱类型
 
 确定了 Python 是动态语言后，接下来我们讨论**强弱类型**语言。首先，强弱类型与是否是动态语言没有必然联系，动态语言并不一定就是弱类型语言，Python 就是一门动态强类型语言。这里的“强弱”可以理解为用以**描述编程语言对于混入不同类型的值进行运算时的处理方式**。
 
 比如在弱类型语言 JavaScript 中，我们可以直接对字符串和数值类型进行相加，虽然得出的结果并不一定是我们想要的：
 
-```js
+```javascript
 > '1' + 2
 '12'
 ```
 
 出现这种现象的原因是 JavaScript 支持**变量类型的隐式转换**。上面的例子就是将数值类型隐式转换为了字符串类型再进行相加。也因此，JavaScript 中才会存在三个等号的判等运算符 `===`。与 `==` 不同，`===` 在判等时不会进行隐式转换，所以才会有下面这样的结果：
 
-```js
+```javascript
 > 1 == '1'
 true
 > 1 === '1'
@@ -632,7 +634,7 @@ TypeError: unsupported operand type(s) for +: 'int' and 'str'
 
 所以，强弱类型语言的区别体现在：强类型语言在遇到函数声明类型和实际调用类型不符合的情况时会直接出错或者编译失败；而弱类型的语言可能会进行隐式转换，从而产生难以意料的结果。
 
-## 鸭子类型
+### 鸭子类型
 
 在面向对象的静态类型语言中，如果要实现一个带特定功能的序列类型，你可能会想到使用继承，以期能在添加特定功能的同时尽可能的重用代码。这符合面向对象的设计原则，但在 Python 中，继承却不是首选方案。
 
@@ -659,7 +661,7 @@ True
 
 **在鸭子类型中，关注点在于对象的行为，即提供的方法，而不在于对象所属的类型。**
 
-### 序列协议
+#### 序列协议
 
 序列协议之所以要专门作为单独的一节，是因为序列在 Python 中尤为重要，Python 会特殊对待看起来像是序列的对象。序列协议包含 `__len__` 和 `__getitem__` 两个方法。任何类，只要实现了 `__len__` 和 `__getitem__` 方法，就可以被看作是一个序列，即使这一次 Python 解释器不再将其绑定为 Sequence 类的子类。
 
@@ -688,10 +690,9 @@ True
 
 综上，鉴于序列协议的重要性，如果没有 `__iter__` 和 `__contains__` 方法，Python 会尝试调用 `__getitem__` 方法设法让迭代和 `in` 运算符可用。
 
-## 特殊方法
+### 特殊方法
 
-想要更深入地理解鸭子类型，必须要了解 Python 中的特殊方法。前面我们提到的以双下划线开头和结尾的方法，比如 `__iter__`，就称为**特殊方法**（special methods
-），或称为**魔法方法**（magic methods）。
+想要更深入地理解鸭子类型，必须要了解 Python 中的特殊方法。前面我们提到的以双下划线开头和结尾的方法，比如 `__iter__`，就称为**特殊方法**（special methods ），或称为**魔法方法**（magic methods）。
 
 Python 标准库和内置库包含了许多特殊方法，需要注意的是，永远不要自己命名一个新的特殊方法，因为你不知道下个 Python 版本会不会将其纳入到标准库中。我们需要做的，是重写现有的特殊方法，并且通常情况下，不需要显式的调用它们，应当使用更高层次的封装方法，如 `str()` 代替 `__str__()`，对特殊方法的调用应交由 Python 解释器进行。
 
@@ -714,9 +715,9 @@ class SeqDuck:
 
 下面我将对一些常用特殊方法进行介绍。
 
-### `__new__` & `__init__`
+#### `__new__` & `__init__`
 
-在 Java 和 C# 这些语言中，可以使用 `new` 关键字创建一个类的实例。Python 虽然没有 `new` 关键字，但提供了 `__new__` 特殊方法。在实例化一个 Python 类时，最先被调用的就是 `__new__` 方法。大多数情况下不需要我们重写 `__new__` 方法，Python 解释器会执行 object 中的 `__new__` 方法创建类实例。但如果要使用单例模式，那么 `__new__` 方法就会派上用场。
+在 Java 和 C\# 这些语言中，可以使用 `new` 关键字创建一个类的实例。Python 虽然没有 `new` 关键字，但提供了 `__new__` 特殊方法。在实例化一个 Python 类时，最先被调用的就是 `__new__` 方法。大多数情况下不需要我们重写 `__new__` 方法，Python 解释器会执行 object 中的 `__new__` 方法创建类实例。但如果要使用单例模式，那么 `__new__` 方法就会派上用场。
 
 ```python
 >>> class Singleton:
@@ -766,16 +767,16 @@ class Person:
     @classmethod
     def female(cls, name):
         return cls(name, 'FEMALE')
-        
+
 p1 = Person('Jack')
 p2 = Person('Jane', 'FEMALE')
 p3 = Person.female('Neo')
 p4 = Person.male('Tony')
 ```
 
-### `__str__` & `__repr__`
+#### `__str__` & `__repr__`
 
-> str() is used for creating output for end user while repr() is mainly used for debugging and development. repr’s goal is to be unambiguous and str’s is to be readable.
+> str\(\) is used for creating output for end user while repr\(\) is mainly used for debugging and development. repr’s goal is to be unambiguous and str’s is to be readable.
 
 `__str__` 和 `__repr__` 都可以用来输出一个对象的字符串表示。使用 `str()` 时会调用 `__str__` 方法，使用 `repr()` 时则会调用 `__repr__` 方法。
 
@@ -813,7 +814,7 @@ repr: Foo
 str: Foo
 ```
 
-### `__call__`
+#### `__call__`
 
 在 Python 中，函数是一等公民。这意味着 Python 中的函数可以作为参数和返回值，并且可以在任何你想调用的时候都能调用它，这对于函数式编程具有重要意义。除此之外，Python 还提供了一个特殊方法 `__call__`，允许类的实例表现得与函数一致，可以对它们进行调用，以及作为参数传递。这在一些需要保存并经常更改状态的类中尤为有用。
 
@@ -853,18 +854,18 @@ str: Foo
 >>> func('foo')
 decorate...
 execute function foo
->>> 
+>>>
 ```
 
 实际上类级别的函数装饰器必须要实现 `__call__` 方法，因为本质上函数装饰器就是一个接收被装饰函数作为参数的高阶函数。有关装饰器可以详见装饰器一章。
 
-### `__add__` 与重载运算符
+#### `__add__` 与重载运算符
 
 运算符重载这个语言特性一直备受争议，鉴于太多 C++ 程序员滥用这个特性，Java 之父 James Gosling 很干脆的决定不为 Java 提供运算符重载功能。但另一方面，正确的使用运算符重载确实能提高代码的可读性和灵活性。为此，Python 施加了一些限制，在灵活性、可用性和安全性之间做到了平衡。主要包括：
 
-- 不能重载内置类型的运算符
-- 不能新建运算符，只能重载现有的
-- is、and、or 和 not 运算符不能重载（但位运算符 &、| 和 ~ 可以）
+* 不能重载内置类型的运算符
+* 不能新建运算符，只能重载现有的
+* is、and、or 和 not 运算符不能重载（但位运算符 &、\| 和 ~ 可以）
 
 Python 中的运算符重载是通过重写特殊方法实现的。比如重载 “+” 加号运算符需要重写 `__add__`，重载比较运算符 “==” 需要重写 `__eq__` 方法。下面我将演示如何重载运算符来提高代码的可读性。
 
@@ -903,59 +904,59 @@ False
 True
 ```
 
-可以看到完全没有必要为 Vector 类添加专门的 `add()` 和 ` equals()` 方法，只需要重载现有运算符，并且代码可读性也显著提高了，直接对向量进行 "+" 相加更符合数学逻辑。另外值得一提的是，在 Python 2 中，在重载 `==` 的同时也要重载 `!=` 运算符即重写 `__ne__` 方法。而在 Python 3 中，这不再是必需的，因为默认情况下，`__ne__` 会委托给 `__eq__` 执行并对结果取反。[官方解释](https://docs.python.org/3/reference/datamodel.html)
+可以看到完全没有必要为 Vector 类添加专门的 `add()` 和 `equals()` 方法，只需要重载现有运算符，并且代码可读性也显著提高了，直接对向量进行 "+" 相加更符合数学逻辑。另外值得一提的是，在 Python 2 中，在重载 `==` 的同时也要重载 `!=` 运算符即重写 `__ne__` 方法。而在 Python 3 中，这不再是必需的，因为默认情况下，`__ne__` 会委托给 `__eq__` 执行并对结果取反。[官方解释](https://docs.python.org/3/reference/datamodel.html)
 
 下面列出一些常见可重载运算符。
 
-#### 一元运算符
+**一元运算符**
 
-| 运算符 | 特殊方法       | 备注                       |
-|:---:|:---------:|------------------------|
-| -   | `__neg__`    | 一元取负算术运算符                |
-| +   | `__pos__`    | 一元取正算术运算符                |
-| ~   | `__invert__` | 对整数按位取反，定义为 ~x == -(x+1) |
+| 运算符 | 特殊方法 | 备注 |
+| :---: | :---: | :--- |
+| - | `__neg__` | 一元取负算术运算符 |
+| + | `__pos__` | 一元取正算术运算符 |
+| ~ | `__invert__` | 对整数按位取反，定义为 ~x == -\(x+1\) |
 
-#### 二元运算符
+**二元运算符**
 
-| 运算符        | 特殊方法         | 就地方法          | 备注                   |
-|:-----------:|:--------------:|:---------------:|----------------------|
-| +          | `__add__`      | `__iadd__`      | 加法或拼接                |
-| -          | `__sub__`      | `__isub__`      | 减法                   |
-| *          | `__mul__`      | `__imul__`      | 乘法或重复复制              |
-| /          | `__truediv__`  | `__itruediv__`  | 除法                   |
-| //         | `__floordiv__` | `__ifloordiv__` | 整除                   |
-| %          | `__mod__`      | `__imod__`      | 取模                   |
-| divmod()   | `__divmod__`   | `__idivmod__`   | 返回由整除的商和模数组成的元组      |
-| ** 或 pow() | `__pow__`      | `__ipow__`      | 取幂                   |
-| @          | `__matmul__`   | `__imatmul__`   | 矩阵乘法(Python 3.5 新引入) |
-| &          | `__and__`      | `__iand__`      | 按位与                  |
-| \|          | `__or__`       | `__ior__`       | 按位或                  |
-| ^          | `__xor__`      | `__ixor__`      | 按位异或                 |
-| <<         | `__lshift__`   | `__ilshift__`   | 按位左移                 |
-| >>         | `__rshift__`   | `__irshift__`   | 按位右移                 |
+| 运算符 | 特殊方法 | 就地方法 | 备注 |
+| :---: | :---: | :---: | :--- |
+| + | `__add__` | `__iadd__` | 加法或拼接 |
+| - | `__sub__` | `__isub__` | 减法 |
+| \* | `__mul__` | `__imul__` | 乘法或重复复制 |
+| / | `__truediv__` | `__itruediv__` | 除法 |
+| // | `__floordiv__` | `__ifloordiv__` | 整除 |
+| % | `__mod__` | `__imod__` | 取模 |
+| divmod\(\) | `__divmod__` | `__idivmod__` | 返回由整除的商和模数组成的元组 |
+| \*\* 或 pow\(\) | `__pow__` | `__ipow__` | 取幂 |
+| @ | `__matmul__` | `__imatmul__` | 矩阵乘法\(Python 3.5 新引入\) |
+| & | `__and__` | `__iand__` | 按位与 |
+| \| | `__or__` | `__ior__` | 按位或 |
+| ^ | `__xor__` | `__ixor__` | 按位异或 |
+| &lt;&lt; | `__lshift__` | `__ilshift__` | 按位左移 |
+| &gt;&gt; | `__rshift__` | `__irshift__` | 按位右移 |
 
 注：就地方法是指就地修改左操作数，如 "+=" 运算符。
 
-#### 比较运算符
+**比较运算符**
 
-| 运算符 | 特殊方法   | 后备机制          |
-|:---:|:--------:|-------------|
-| ==  | `__eq__` | 判断 id 是否相等 |
-| !=  | `__ne__` | 对 `__eq__` 取反 |
-| >   | `__gt__` | 抛出 TypeError  |
-| <   | `__lt__` | 抛出 TypeError  |
-| >=  | `__ge__` | 抛出 TypeError  |
-| <=  | `__le__` | 抛出 TypeError  |
+| 运算符 | 特殊方法 | 后备机制 |
+| :---: | :---: | :--- |
+| == | `__eq__` | 判断 id 是否相等 |
+| != | `__ne__` | 对 `__eq__` 取反 |
+| &gt; | `__gt__` | 抛出 TypeError |
+| &lt; | `__lt__` | 抛出 TypeError |
+| &gt;= | `__ge__` | 抛出 TypeError |
+| &lt;= | `__le__` | 抛出 TypeError |
 
 注：后备机制是指特殊方法不存在或方法运行异常时采取的行为。
 
-# Lecture 3
+## Lecture 3
 
-## 函数是一等公民
+### 函数是一等公民
 
 虽然《流畅的Python》作者一再强调 Python 不是一门函数式编程语言，但它的的确确具备了一些函数式编程的特性。其中的一个重要特性是：Python 将**函数作为一等公民**。这与 JavaScript、Scala 等语言一样，意味着在这类语言中：**函数与其他数据类型处于同等地位，函数可以定义在函数内部，也可以作为函数的参数和返回值**。基于这个特性，我们可以很容易的定义高阶函数。来看一个 JavaScript 的例子：
 
-```js
+```javascript
 const add = function(x) {
   return function(y) {
     return x + y
@@ -965,7 +966,7 @@ const add = function(x) {
 
 这个函数将一个函数作为了返回值，很明显它是一个高阶函数，那么问题来了：这样定义有什么作用或者是好处呢？事实上，这段代码是 JavaScript 中的一个优雅的函数式编程库 [Ramda](https://ramdajs.com/) 对于加法实现的基本思路（还需要可变参数以及参数个数判断）。最终我们可以这样去使用它：
 
-```js
+```javascript
 const R = require('ramda')
 R.add(1, 2) // -> 3
 const increment = R.add(1) // 返回一个函数
@@ -975,7 +976,7 @@ R.add(1)(2) // -> 3
 
 既可以像代码第二行一次性传入两个参数，也可以像代码第三、四行分两个阶段传入，这与代码第五行效果一致。我们将这种特性称为**函数柯里化（Currying）**，这样做的好处一是可以**代码重用**，就像特意将 `R.add(1)` 取名为 increment 一样，它可以单独地作为一个递增函数；二是可以实现**惰性求值**，只有当函数收集到了所有所需参数，才进行真正的计算并返回结果，这一点在许多流处理框架中有广泛使用。
 
-Python 中的函数之所以可以作为一等公民，究其原因，是因为 Python 中的**一切皆是对象**，即 *Everything in Python is an object*。使用 `def` 关键字定义的任何函数，都是 `function` 类的一个实例。
+Python 中的函数之所以可以作为一等公民，究其原因，是因为 Python 中的**一切皆是对象**，即 _Everything in Python is an object_。使用 `def` 关键字定义的任何函数，都是 `function` 类的一个实例。
 
 ```python
 >>> def func():
@@ -1011,7 +1012,7 @@ public interface Consumer<T> {
 
 言归正传，既然已经清楚了 Python 中可以定义高阶函数，那么接下来就可以探讨一下 Python 怎么使用高阶函数实现装饰器的。但在这之前，不得不提及一下什么是闭包。
 
-## 闭包
+### 闭包
 
 首先注意，只有涉及到**嵌套函数**才会存在闭包问题。而不要将闭包与匿名函数搞混，是不是匿名函数不是必要条件，只是人们通常将闭包与匿名函数搭配使用罢了（尤其是在 JavaScript 中）。
 
@@ -1054,7 +1055,7 @@ def make_average():
 
 `__code__.co_freevars` 以元组形式存放了自由变量的**名称**。要想访问自由变量的值，需要通过 `__closure__` 属性，也就是说，实际上 series 是绑定到 `avg.__closure__` 中的。Python 在自由变量之上包装了一个 cell 对象，用 `cell_contents` 存放其真正的值。
 
-## 装饰器
+### 装饰器
 
 装饰器，又称函数装饰器，本质上是一个**可调用对象**（实现了 `__call__` 方法），可以是一个函数或者一个类。它接受一个函数作为参数，即被装饰的函数，可能会对这个函数进行处理然后将它返回，或者替换为另一个函数或可调用对象。我们先来看一个简单样例：
 
@@ -1113,9 +1114,9 @@ def clock(unit=TimeUnit.SECONDS):  # ①
 
 上述代码有几个需要注意的点，已经用带圈数字标注出来：
 
-- ① 最外层的 clock 工厂函数接收一个名为 unit 的时间单位的参数，默认值为秒（这里采用枚举类型）；
-- ② **如果被装饰的函数带参数，只需要把装饰器最内层函数跟被装饰函数的参数列表保持一致即可**。这里 clocked 函数接收任意个定位参数和仅限关键字参数，写成这样的目的是想体现 clock 计时器的泛用性，你可以在 ③ 处原封不动地将这些参数传给被装饰函数 func 调用；
-- ③ func 实际上是定义在 clocked 外层的自由变量（作为 decorate 的参数传入），所以它已经被绑定到 clocked 的闭包中。
+* ① 最外层的 clock 工厂函数接收一个名为 unit 的时间单位的参数，默认值为秒（这里采用枚举类型）；
+* ② **如果被装饰的函数带参数，只需要把装饰器最内层函数跟被装饰函数的参数列表保持一致即可**。这里 clocked 函数接收任意个定位参数和仅限关键字参数，写成这样的目的是想体现 clock 计时器的泛用性，你可以在 ③ 处原封不动地将这些参数传给被装饰函数 func 调用；
+* ③ func 实际上是定义在 clocked 外层的自由变量（作为 decorate 的参数传入），所以它已经被绑定到 clocked 的闭包中。
 
 ③ 处是被装饰函数真正执行的地方，上下两行使用计时器记录并统计了 func 函数运行前后的时间差值，在打印时根据传入 clock 的参数决定打印时间单位采用秒还是毫秒。我们来看看如何使用这个装饰器：
 
@@ -1140,7 +1141,7 @@ running sleep_secs(1): 1.000441283999976s
 running sleep_ms(100): 103.84234799994374ms
 ```
 
-首先应当注意第一个空参装饰器 `@clock()`，其中的 `()` 是不能省略的，它使用了 `TimeUnit.SECONDS` 作为默认参数，这是在 clock 定义处声明的。此外，clock 装饰器中的参数并不是和函数名绑定的，打印的时间单位完全取决于传入 clock 装饰器的参数。比如，也可以让 sleep_ms 按照秒的格式打印时间：
+首先应当注意第一个空参装饰器 `@clock()`，其中的 `()` 是不能省略的，它使用了 `TimeUnit.SECONDS` 作为默认参数，这是在 clock 定义处声明的。此外，clock 装饰器中的参数并不是和函数名绑定的，打印的时间单位完全取决于传入 clock 装饰器的参数。比如，也可以让 sleep\_ms 按照秒的格式打印时间：
 
 ```python
 >>> @clock(unit=TimeUnit.SECONDS)
@@ -1151,12 +1152,13 @@ running sleep_ms(100): 103.84234799994374ms
 running sleep_ms(100): 0.10072612899966771s
 ```
 
-### 类装饰器
+#### 类装饰器
 
-### 延伸：面向切面编程
+#### 延伸：面向切面编程
 
-# Lecture 4
+## Lecture 4
 
-## 生成式表达式
+### 生成式表达式
 
-## * 和 ** 运算符
+### _和 \*_ 运算符
+
