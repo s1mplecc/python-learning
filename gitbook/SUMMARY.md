@@ -26,5 +26,4 @@
   * [函数是一等公民](lecture-3/han-shu-shi-yi-deng-gong-min.md)
   * [闭包](lecture-3/bi-bao.md)
   * [装饰器](lecture-3/zhuang-shi-qi.md)
-* [第四章](di-si-zhang.md)
 
