@@ -22,6 +22,7 @@
   * [Python 是动态强类型语言](lecture-2/python-shi-dong-tai-qiang-lei-xing-yu-yan.md)
   * [鸭子类型](lecture-2/ya-zi-lei-xing.md)
   * [特殊方法](lecture-2/te-shu-fang-fa.md)
+  * [运算符重载](lecture-2/yun-suan-fu-zhong-zai.md)
 * [第三章](lecture-3/README.md)
   * [函数是一等公民](lecture-3/han-shu-shi-yi-deng-gong-min.md)
   * [闭包](lecture-3/bi-bao.md)
