@@ -2,7 +2,7 @@ import pytest
 
 
 class TestClass:
-    def test_one(self):
+    def test_1(self):
         assert 'h' in 'this'
 
     # will not be tested
@@ -11,18 +11,18 @@ class TestClass:
 
 
 class TestClass2:
-    def test_three(self):
+    def test_3(self):
         assert 1 + 1 == 2
 
 
 class NotTestClass:
     # will not be tested
-    def test_four(self):
+    def test_4(self):
         assert 1 + 1 == 2
 
 
 # will be tested
-def test_five():
+def test_5():
     assert 1 + 1 == 2
 
 

@@ -1,4 +1,4 @@
-from vector import Vector
+from vector_v1 import Vector
 
 
 class Singleton:
