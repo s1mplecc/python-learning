@@ -1,16 +1,21 @@
-class Vector:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+import itertools
+from array import array
+from collections.abc import Iterable
 
-    def __repr__(self):
-        return f'Vector({self.x}, {self.y})'
+
+class Vector:
+    def __init__(self, components: Iterable):
+        self._components = array('i', components)
+
+    def __iter__(self):
+        return iter(self._components)
 
     def __add__(self, other):
-        return Vector(self.x + other.x, self.y + other.y)
+        pairs = itertools.zip_longest(self, other, fillvalue=0)
+        return Vector(a + b for a, b in pairs)
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        return len(self) == len(other) and all(a == b for a, b in zip(self, other))
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def __len__(self):
+        return len(self._components)
