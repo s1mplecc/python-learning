@@ -19,3 +19,6 @@ class Vector:
 
     def __len__(self):
         return len(self._components)
+
+    def __repr__(self):
+        return str(tuple(self._components))
