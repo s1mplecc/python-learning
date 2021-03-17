@@ -33,3 +33,9 @@ class TestVector:
 
         assert v1 + (1, 1) == (2, 3)
         assert v1 + [1, 1, 1] == (2, 3, 1)
+
+    def test_should_add_iterable_and_vector_with_override_radd_method(self):
+        v1 = Vector([1, 2])
+
+        assert (1, 1) + v1 == (2, 3)
+        assert [1, 1, 1] + v1 == (2, 3, 1)
