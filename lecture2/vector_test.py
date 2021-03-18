@@ -39,3 +39,10 @@ class TestVector:
 
         assert (1, 1) + v1 == (2, 3)
         assert [1, 1, 1] + v1 == (2, 3, 1)
+
+    def test_should_create_new_vector_when_use_incremental_add_operator(self):
+        v1 = Vector([1, 2])
+        id1 = id(v1)
+        v1 += (1, 1)
+
+        assert id(v1) != id1
