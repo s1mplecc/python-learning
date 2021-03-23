@@ -7,9 +7,36 @@ class TimeUnit(Enum):
     MILL_SECONDS = 'ms'
 
 
+'''
+Function decorator without arguments
+
+>>> person('Jack')
+[INFO]: the function person() is running...
+Jack 18
+'''
+
+
+def logger(func):
+    def target(*args, **kwargs):
+        print(f'[INFO]: the function {func.__name__}() is running...')
+        return func(*args, **kwargs)
+
+    return target
+
+
+@logger
+def person(name, age=18):
+    print(name, age)
+
+
+'''
+Function decorator with arguments
+'''
+
+
 def clock(unit=TimeUnit.SECONDS):
     def decorate(func):
-        def clocked(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             start = time.perf_counter()
             result = func(*args, **kwargs)
             end = time.perf_counter()
@@ -20,7 +47,7 @@ def clock(unit=TimeUnit.SECONDS):
                 print(f'running {func.__name__}({arg_str}): {(end - start) * 1000}ms')
             return result
 
-        return clocked
+        return wrapper
 
     return decorate
 
