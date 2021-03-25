@@ -688,6 +688,51 @@ True
 
 综上，鉴于序列协议的重要性，如果没有 `__iter__` 和 `__contains__` 方法，Python 会尝试调用 `__getitem__` 方法设法让迭代和 `in` 运算符可用。
 
+### 绑定虚拟子类
+
+你也会有个疑问，为什么 IterDuck 和 SeqDuck 都没有显示继承父类，但 IterDuck 却是 Iterator 类的子类，而 SeqDuck 不是 Sequence 的子类呢？这要归因于 Python 的**虚拟子类**机制。一般情况下，使用 `register` 关键字可以将一个类注册为另一个类的虚拟子类，比如 `collections.abc` 模块中是这样将内置类型 tuple、str、range 和 memoryview 注册为序列类 Sequence 的虚拟子类的：
+
+```python
+Sequence.register(tuple)
+Sequence.register(str)
+Sequence.register(range)
+Sequence.register(memoryview)
+```
+
+这解释了为什么这些类的显示继承父类是 object，但同样能应用序列类的诸多方法。而对于用户自定义的类型来说，**即使不注册，抽象基类也能把一个类识别为虚拟子类，这需要抽象基类实现一个名为 `__subclasshook__` 的特殊的钩子方法**。如下是 `collections.abc` 模块中 Iterator 抽象基类的源码：
+
+```python
+# _collections_abc.py
+class Iterator(Iterable):
+    # ...
+    @classmethod
+    def __subclasshook__(cls, C):
+        if cls is Iterator:
+            return _check_methods(C, '__iter__', '__next__')
+        return NotImplemented
+```
+
+对于实现了迭代器协议，即 `__iter__` 和 `__next__` 方法的类来说，它就会被钩子方法检测到并绑定为 Iterator 的虚拟子类，这解释了为什么 `issubclass(IterDuck, Iterator)` 会验证通过。类似的，可迭代对象 Iterable 协议要更加宽松，因为它只检查了 `__iter__` 方法。
+
+那么为什么 SeqDuck 没有被绑定为 Sequence 的子类呢？因为 Sequence 类没有实现 `__subclasshook__` 钩子方法。Python 对序列的子类要求更加严格，即使实现了序列协议 `__len__` 和 `__getitem__` 方法的类可以被视为一个序列，但依然不能称之为序列的子类。最典型的例子就是内置类型字典。虽然字典实现了这两个方法，但它不能通过整数偏移值获取元素，且字典内的元素顺序是无序的，所以不能将其视为 Sequence 的子类型。
+
+```python
+>>> from collections.abc import Sequence
+>>> '__getitem__' in dir(dict) and '__len__' in dir(dict)
+True
+>>> issubclass(dict, Sequence)
+False
+>>> d = {'a': 1, 'b': 2}
+>>> isinstance(d, Sequence)
+False
+>>> d['a']
+1
+>>> d[1]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 1
+```
+
 ## 特殊方法
 
 想要更深入地理解鸭子类型，必须要了解 Python 中的特殊方法。前面我们提到的以双下划线开头和结尾的方法，比如 `__iter__`，就称为**特殊方法**（special methods），或称为**魔法方法**（magic methods）。
