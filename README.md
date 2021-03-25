@@ -690,7 +690,7 @@ True
 
 ### 绑定虚拟子类
 
-你也会有个疑问，为什么 IterDuck 和 SeqDuck 都没有显示继承父类，但 IterDuck 却是 Iterator 类的子类，而 SeqDuck 不是 Sequence 的子类呢？这要归因于 Python 的**虚拟子类**机制。一般情况下，使用 `register` 关键字可以将一个类注册为另一个类的虚拟子类，比如 `collections.abc` 模块中是这样将内置类型 tuple、str、range 和 memoryview 注册为序列类 Sequence 的虚拟子类的：
+你也许会有个疑问，为什么 IterDuck 和 SeqDuck 都没有显示继承父类，但 IterDuck 却是 Iterator 类的子类，而 SeqDuck 不是 Sequence 的子类呢？这要归因于 Python 的**虚拟子类**机制。一般情况下，使用 `register` 关键字可以将一个类注册为另一个类的虚拟子类，比如 `collections.abc` 模块中是这样将内置类型 tuple、str、range 和 memoryview 注册为序列类 Sequence 的虚拟子类的：
 
 ```python
 Sequence.register(tuple)
@@ -699,7 +699,7 @@ Sequence.register(range)
 Sequence.register(memoryview)
 ```
 
-这解释了为什么这些类的显示继承父类是 object，但同样能应用序列类的诸多方法。而对于用户自定义的类型来说，**即使不注册，抽象基类也能把一个类识别为虚拟子类，这需要抽象基类实现一个名为 `__subclasshook__` 的特殊的钩子方法**。如下是 `collections.abc` 模块中 Iterator 抽象基类的源码：
+这也是为什么这些类的显示继承父类是 object，但同样能应用序列类的诸多方法。而对于用户自定义的类型来说，**即使不注册，抽象基类也能把一个类识别为虚拟子类，这需要抽象基类实现一个名为 `__subclasshook__` 的特殊的钩子方法**。如下是 `collections.abc` 模块中 Iterator 抽象基类的源码：
 
 ```python
 # _collections_abc.py
