@@ -25,7 +25,7 @@ True
 
 **在鸭子类型中，关注点在于对象的行为，即提供的方法，而不在于对象所属的类型。**
 
-## 序列协议
+### 序列协议
 
 序列协议之所以要专门作为单独的一节，是因为序列在 Python 中尤为重要，Python 会特殊对待看起来像是序列的对象。序列协议包含 `__len__` 和 `__getitem__` 两个方法。任何类，只要实现了 `__len__` 和 `__getitem__` 方法，就可以被看作是一个序列，即使这一次 Python 解释器不再将其绑定为 Sequence 类的子类。
 
@@ -52,7 +52,7 @@ True
 
 综上，鉴于序列协议的重要性，如果没有 `__iter__` 和 `__contains__` 方法，Python 会尝试调用 `__getitem__` 方法设法让迭代和 `in` 运算符可用。
 
-## 绑定虚拟子类
+### 绑定虚拟子类
 
 你也会有个疑问，为什么 IterDuck 和 SeqDuck 都没有显示继承父类，但 IterDuck 却是 Iterator 类的子类，而 SeqDuck 不是 Sequence 的子类呢？这要归因于 Python 的**虚拟子类**机制。一般情况下，使用 `register` 关键字可以将一个类注册为另一个类的虚拟子类，比如 `collections.abc` 模块中是这样将内置类型 tuple、str、range 和 memoryview 注册为序列类 Sequence 的虚拟子类的：
 
@@ -96,3 +96,4 @@ Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 KeyError: 1
 ```
+
