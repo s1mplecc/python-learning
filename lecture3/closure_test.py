@@ -1,5 +1,12 @@
-from closure import make_average
-import pytest
+def make_average():
+    series = []
+
+    def average(new_value):
+        series.append(new_value)
+        total = sum(series)
+        return total / len(series)
+
+    return average
 
 
 class TestClosure:
@@ -35,7 +42,3 @@ class TestClosure:
         avg(1)
         avg(2)
         assert avg.__closure__[0].cell_contents == [1, 2]
-
-
-if __name__ == "__main__":
-    pytest.main(['-p', 'no:cacheprovider'])
