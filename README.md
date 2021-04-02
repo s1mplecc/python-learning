@@ -59,7 +59,7 @@
     * [生成器函数](#%E7%94%9F%E6%88%90%E5%99%A8%E5%87%BD%E6%95%B0)
     * [生成器表达式](#%E7%94%9F%E6%88%90%E5%99%A8%E8%A1%A8%E8%BE%BE%E5%BC%8F)
     * [yield from](#yield-from)
-  * [Todo: itertools](#itertools)
+  * [itertools 模块(Todo)](#itertools)
 * [Lecture 4：函数](#lecture-4%E5%87%BD%E6%95%B0)
   * [函数是一等公民](#%E5%87%BD%E6%95%B0%E6%98%AF%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91)
   * [闭包](#%E9%97%AD%E5%8C%85)
@@ -67,8 +67,8 @@
     * [函数装饰器](#%E5%87%BD%E6%95%B0%E8%A3%85%E9%A5%B0%E5%99%A8)
     * [类装饰器](#%E7%B1%BB%E8%A3%85%E9%A5%B0%E5%99%A8)
     * [面向切面的程序设计](#%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%9A%84%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1)
-  * [Todo: 函数的参数](#%E5%87%BD%E6%95%B0%E7%9A%84%E5%8F%82%E6%95%B0)
-  * [Todo: functools](#functools)
+  * [函数的参数(Todo)](#%E5%87%BD%E6%95%B0%E7%9A%84%E5%8F%82%E6%95%B0)
+  * [functools 模块(Todo)](#functools)
 
 # Lecture 1：准备工作
 
