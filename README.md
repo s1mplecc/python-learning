@@ -52,7 +52,7 @@
   * [生成式表达式](#%E7%94%9F%E6%88%90%E5%BC%8F%E8%A1%A8%E8%BE%BE%E5%BC%8F)
   * [\* 和 \*\* 运算符](#-%E5%92%8C--%E8%BF%90%E7%AE%97%E7%AC%A6)
 
-# Lecture 1
+# Lecture 1：准备工作
 
 作为系列学习的开始，我一直在思考应当安排哪些内容，考虑到动手实践的重要性，最终我安排了以下这四个章节。**环境准备**，将引导你搭建一个自己的 Python 开发环境；**编码规范**以及**阅读源码**章节，我相信这对于任何语言的学习和实践都具有重要意义，阅读源码教会你拿到一份源码该如何下手，遵循编码规范则让你编写出令人赏心悦目的代码；以及最后的**单元测试**章节，我将其作为验证语言特性的最佳工具，也是作为特性学习的正式开始。
 
@@ -569,7 +569,7 @@ E         + Vector(0)
 
 **关于测试用例命名**：尽管我的测试用例命名不严格遵循 TDD 中的  “Given-When-Then” 格式，但是通过 “should + 下划线”这种命名规范，也可以清晰的明白某个测试用例测试了什么功能。比如，看到 `test_should_add_two_vectors_with_add_operator()`，你可能能猜到这个测试用例测试的是加法运算符的重载。
 
-# Lecture 2
+# Lecture 2：语言特性
 
 ## Python 是动态强类型语言
 
@@ -1256,7 +1256,480 @@ class TestVector:
 |  | a &gt;= b | `a.__ge__(b)` | `b.__le__(a)` | 抛出 TypeError |
 |  | a &lt;= b | `a.__le__(b)` | `b.__ge__(a)` | 抛出 TypeError |
 
-# Lecture 3
+# Lecture 3：可迭代类型
+
+## 序列
+
+之前我们已经讨论过，Python 的“序列协议”是指：任何类，只要使用标准的签名和语义实现了 `__getitem__` 和 `__len__` 方法，就能用在任何期待序列的地方，解释器会为这些类做特殊的支持，比如支持迭代和 in 运算符。序列协议的接口定义可以查阅官方的 CPython API 接口文档：[Python/C API Reference Manual -- Sequence Protocol](https://docs.python.org/3.8/c-api/sequence.html)，其中有这样一个函数：
+
+```c
+int PySequence_Check(PyObject *o)
+/* Return 1 if the object provides sequence protocol, and 0 otherwise. Note that it returns 1 for Python classes with a __getitem__() method unless they are dict subclasses since in general case it is impossible to determine what the type of keys it supports. This function always succeeds. */
+```
+
+这个函数的作用是检查并返回对象是否支持序列协议 —— 只在实现了 `__getitem__` 方法且不是字典子类时才返回 1。这也符合我们之前所说的，协议是非正式的，没有强制力，只要你知道类的具体使用场景，可以只实现协议的一部分。比如，仅为了支持迭代，甚至不需要提供 `__len__` 方法。
+
+Python 常用的内置序列类型包括：字符串 str、列表 list、元组 tuple 和范围 range。尽管字典 dict 和集合 set 实现了序列协议中的 `__getitem__` 和 `__len__` 方法，但它们并不算序列类型，因为它们的特征与序列有本质差异，比如这两个类型不支持通过整数下标索引访问元素，不支持切片，并且字典和集合内的元素是无序的。
+
+序列类 Sequence，定义在标准库 `collections.abc` 模块中，继承自 Reversible 和 Collection 类，而 Collection 又继承自 Sized、Iterable 和 Container，体现了序列类可反转、具有规模、可迭代和是一个容器的语义。
+
+从 `collections.abc` 模块的源码中，我们还能了解到序列类包含哪些子类。除了显示继承了 Sequence 的子类，如 ByteString 和 MutableSequence，还有通过 register 关键字绑定为 Sequence 虚拟子类的一些内置类型，在绑定虚拟子类一节中也提到过这一点。
+
+```python
+>>> from collections.abc import Sequence
+>>> all([issubclass(i, Sequence) for i in (str, list, tuple, range, bytes, bytearray, memoryview)])
+True
+>>> any([issubclass(i, Sequence) for i in (dict, set)])
+False
+```
+
+上面列表推导表达式中的所有类型都是定义在 builtsin 模块中的内置类型，可以看到，除了 dict 和 set 之外，第二行的所有内置类型都是序列类型。除此之外，标准库中还定义了其他序列类型，比如 array 模块的 array 数组类型，collections 模块中的 deque 双端队列类型。
+
+对于这些序列类型，按照序列内可容纳的类型，可以划分为以下两组：
+
+- **容器序列**：list、tuple 和 collections.deque 这些序列类能存放不同类型的数据；
+- **扁平序列**：str、bytes、bytearray、memoryview、array.array 和 range 这类序列类只能容纳一种或某种特定类型的数据。
+
+容器序列存放的是它们所包含的任意类型的对象的引用，而扁平序列存放的是值而不是引用。扁平序列存储在一段连续的内存空间之上，只能存放诸如字符、字节和数值这种基础类型。
+
+序列类型还能按照能否被修改来分类：
+
+- **可变序列**：list、bytearray、memoryview、array.array 和 collections.deque；
+- **不可变序列**：tuple、str、bytes 和 range。
+
+可变序列 MutableSequence 也定义在 `collections.abc` 模块中，并在继承 Sequence 的基础上还添加了一些支持序列修改的默认方法，如 `append()`、`pop()` 方法等。除了 Sequence 基类中要实现的 `__getitem__` 和 `__len__` 方法外，可变序列还要求具体子类必须实现 `__setitem__`、`__delitem__` 和 `insert()` 方法。
+
+序列不可变意味着序列一旦被声明赋值，序列的大小就固定下来，其内的元素也不能被修改。这里用来说明序列可变不可变的典型案例是列表和元组。在 Python 中，列表是可变的，元组是不可变的。列表可变体现在它支持对元素的增加删除和直接赋值，且列表支持**就地运算**，比如使用 "+=" 运算符可以直接将一个可迭代对象中的元素添加到当前列表的末尾。而元组是不可变的，元组一经定义大小就已固定，不能增加删除元素，也不对其内元素重新赋值。即使元组也支持就地运算符，但会生成一个新的元组对象重新绑定。
+
+```python
+>>> l = [1, 2]  # list
+>>> id(l)
+4411278528
+>>> l[0] = 0
+>>> l += [3, 4]
+>>> l
+>>> [0, 2, 3, 4]
+>>> id(l)
+4411278528
+>>> t = (1, 2)  # tuple
+>>> id(t)
+4410964416
+>>> t += (3, 4)
+>>> id(t)
+4411277824
+>>> t[0] = 0
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'tuple' object does not support item assignment
+>>> t
+(1, 2, 3, 4)
+```
+
+此外，Python 中的可散列对象一定是不可变类型，散列方法 `__hash__` 通常和 `__eq__` 方法一起用来判断两个对象是否相等，如集合 set 和字典的键要求元素是可散列的，这被用来判断元素是否重复。所以，元组可以作为集合的元素和字典的键，而列表却不可以。
+
+```python
+>>> t1 = (1, 2)
+>>> t2 = (1, 2)
+>>> id(t1) == id(t2)
+False
+>>> hash(t1) == hash(t2)
+True
+>>> set([(1, 2), (3,)])
+{(1, 2), (3,)}
+>>> dict({(1, 2): 1})
+{(1, 2): 1}
+```
+
+注：在散列时，元组内的每一项元素会被散列然后进行 XOR 异或运算，因此只有当元组中的每个元素都是不可变类型时，该元组才能被散列。
+
+## map、filter 与列表推导
+
+列表是 Python 中非常重要且常用的内置类型，列表被注册为可变序列的虚拟子类，`MutableSequence.register(list)`，所以列表的性质与可变序列性质相符，可以阅读 `collections.abc` 模块中 MutableSequence 类的源码进行了解。列表的性质不做过多介绍，这一节我想介绍一下列表推导。在上一节中就曾经使用 `all()`、`any()` 方法结合列表推导，巧妙地展示了哪些内置类型是序列类的子类。
+
+在介绍列表推导之前，有必要先介绍以下几个函数：`map()`、`filter()` 和 `reduce()` 函数。这几个函数是函数式编程的范例函数。它们都是用于处理可迭代序列的基本函数，所以被视为可迭代数据集函数式编程的基石，包含了数据集的映射、过滤和规约三个思想。所有支持函数式编程的语言都提供了这些函数的接口。Java 8 新增的 Stream API 配合箭头函数可以写出很优雅的链式函数，同样，JavaScript 中也支持链式写法：
+
+```js
+> l = [1, 2, 3, 4, 5]
+[ 1, 2, 3, 4, 5 ]
+> l.map(x => x * x)
+[ 1, 4, 9, 16, 25 ]
+> l.map(x => x * x).filter(x => x > 10)
+[ 16, 25 ]
+> l.map(x => x * x).filter(x => x > 10).reduce((x, y) => x + y)
+41
+```
+
+相比之下，Python 中的写法就不那么优雅了，map、filter 和 reduce 函数作为内置库或者标准库中的函数提供，序列本身并没有实现这些方法，所以不能通过 dot 运算符直接调用，而需要将序列作为这些函数的参数传入。
+
+### `map()`
+
+> `map(func, *iterables) --> map object`
+>
+> Make an iterator that computes the function using arguments from each of the iterables.  Stops when the shortest iterable is exhausted.
+
+map 函数，又称映射函数，定义在内置模块 builtins 模块中。map 函数将可迭代对象的每个元素依次应用于 func 函数进行映射，返回的 map object 是一个可以依次产出映射后元素的生成器对象，可以使用 `list()` 包装一次性输出。传入的函数 func 可以是预先定义好的函数，也可以是 lambda 表达式定义的匿名函数。
+
+```python
+>>> def square(x):
+...     return x * x
+... 
+>>> map(square, range(10))
+<map object at 0x106ebb910>
+>>> list(map(square, range(10)))
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+>>> list(map(lambda x: x * x, range(10)))
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+```
+
+从函数签名来看，map 函数能够接受多个可迭代对象，映射时将依次从每个可迭代对象中各取出一个元素应用于 func 函数，因此 func 也须接受同样数量的参数。如果这些可迭代对象的元素个数不一致，以个数最少的为标杆，即个数最少的可迭代对象遍历完毕时终止迭代。
+
+```python
+>>> list(map(lambda x, y: x * y, range(5), range(1, 6)))
+[0, 2, 6, 12, 20]
+>>> list(map(lambda x, y: x * y, range(10), range(1, 6)))
+[0, 2, 6, 12, 20]
+```
+
+### `filter()`
+
+> `filter(function or None, iterable) --> filter object`
+>
+> Return an iterator yielding those items of iterable for which function(item) is true. If function is None, return the items that are true.
+
+filter 函数，又称过滤函数，定义在内置模块 builtins 模块中。过滤函数将可迭代对象中的每个元素应用于谓词函数 function 后为 True 的保留下来。返回的 filter object 也是一个生成器对象，可以依次产出过滤后为真的元素。如果 function 为 None，直接判断元素是否为真值。
+
+```python
+>>> list(filter(lambda x: x > 5, range(10)))
+[6, 7, 8, 9]
+>>> list(filter(None, [0, 1, True, False, 0.0, -1, [], (1, 2)]))
+[1, True, -1, (1, 2)]
+```
+
+### `reduce()`
+
+> `reduce(function, sequence[, initial]) -> value`
+>
+> Apply a function of two arguments cumulatively to the items of a sequence, from left to right, so as to reduce the sequence to a single value. For example, reduce(lambda x, y: x + y, [1, 2, 3, 4, 5]) calculates ((((1 + 2) + 3) + 4) + 5).  If initial is present, it is placed before the items of the sequence in the calculation, and serves as a default when the sequence is empty.
+
+reduce 函数，又称规约函数，定义在 functools 模块中。规约函数的参数除了函数和序列之外，还接收一个可选的初始值。规约函数会将一个序列从左至右逐步规约为一个值。参数 function 接收两个参数，第一个参数代表每步规约后的累积值（首次规约为初始值），第二个参数代表每次迭代的序列中的元素，返回值为规约的结果，作为下一步规约的第一个参数传入。也就是说，function 函数的第一个参数、每步规约的返回值和 reduce 函数的返回值应为同一类型，function 的第二个参数为迭代序列的元素类型，两者可以是相同类型也可以是不同类型。
+
+```python
+>>> from functools import reduce
+>>> reduce(lambda x, y: x + y, range(10))
+45
+>>> def concat_string(s, ch):
+...     return s + str(ch)
+... 
+>>> reduce(concat_string, ['a', 1, 'b'], '0')
+'0a1b'
+```
+
+### 列表推导
+
+如果想像 JavaScript 代码演示的那样，依次对一个序列数据流进行映射、过滤和规约操作，Python 的写法会显得不那么优雅。由于序列必须作为参数传入，无法放在左侧使用 dot 运算符进行链式书写，我们不得不编写多层嵌套的表达式：
+
+```python
+>>> import operator
+>>> from functools import reduce
+>>> list(filter(lambda x: x < 50, map(lambda x: x * x, range(10))))
+[0, 1, 4, 9, 16, 25, 36, 49]
+>>> reduce(operator.add, (filter(lambda x: x < 50, map(lambda x: x**2, range(10)))))
+140
+```
+
+且不说冗余的 lambda 关键字，即使预先定义了函数使用函数名代替，整个表达式从右至左的执行循序也会不利于理解。所幸的是，Python 提供了一种精炼的表达式，来代替多层嵌套下纠缠不清的 map 和 filter 方法，那就是**列表推导**（list comprehension）。
+
+列表推导是一个语法糖，可以根据可迭代对象构建出一个新的列表。列表推导使用一对中括号 "[]"，内部至少包含一个 for 循环表达式，对应 map 方法；以及可选的 if 条件表达式，对应 filter 方法。列表推导返回的是列表类型。
+
+```python
+>>> [x * x for x in range(10)]
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+>>> [x * x for x in range(10) if x < 5]
+[0, 1, 4, 9, 16]
+>>> [_ * _ for _ in range(10) if _ < 5]
+[0, 1, 4, 9, 16]
+>>> [x * y for x in range(1, 3) for y in ('a', 'b', 'c')]
+['a', 'b', 'c', 'aa', 'bb', 'cc']
+>>> [x for y in [(1, 2), (3, 4), (5,)] for x in y]
+[1, 2, 3, 4, 5]
+```
+
+表达式内的变量是一个局部变量，作用域仅限于该列表推导表达式。但 Python2 中的列表推导存在变量泄漏问题，表达式内的变量会影响到上下文中的同名变量，在 Python 3 中这个缺陷已被修复。
+
+列表推导也支持**多重循环**，即多个 for 循环表达式，这些 for 表达式会按照从左至右的顺序来嵌套。与多层嵌套的 for 循环函数一致，先定义（左侧）的 for 循环在外层，后定义（右侧）的 for 循环在内层。外层定义的变量可用作内层的 for 循环，如上述代码中的最后一个列表推导式。如果用函数形式书写，那么代码如下：
+
+```python
+>>> [x for y in [(1, 2), (3, 4), (5,)] for x in y]
+[1, 2, 3, 4, 5]
+>>> def flat():
+...     for y in [(1, 2), (3, 4), (5,)]:
+...         for x in y:
+...             yield x
+... 
+>>> list(flat())
+[1, 2, 3, 4, 5]
+```
+
+字典和集合也有类似的推导机制，可以通过这些推导机制创建衍生的数据结构。字典推导可以从任何以键值对为元素的可迭代对象中构建出字典。集合推导可以从可迭代对象中去除重复元素，构建集合。
+
+```python
+>>> d = {'a': 1, 'b': 2, 'c': 3}
+>>> {i: j for j, i in d.items()}  # 字典推导
+{1: 'a', 2: 'b', 3: 'c'}
+>>> {i for i in d.keys()}  # 集合推导
+{'a', 'c', 'b'}
+```
+
+#### 列表推导的最佳实践
+
+使用列表推导的原则是：**只用于创建新的列表，并且尽量保持简短，不建议使用含有两个以上表达式的列表推导**。依照函数式编程中的纯函数定义，函数不应该对传入的参数进行修改，否则会产生副作用。所以列表推导不该对传入序列做修改，而应该只用于创建新的列表。尽量保持简短则是出于可读性的考量。如果包含两个较长的表达式，可以考虑拆分为两行。Python 会忽略 []、{} 和 () 中换行，所以可以省略不太好看的续行符 \\。
+
+```python
+>>> [(i, j) for i in range(2)
+...         for j in range(3)]
+[(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
+```
+
+如果列表推导式过长，就要考虑是否需要使用函数形式改写，有时命名清晰且带有缩进的函数可读性要更高。
+
+列表推导也不是银弹，相较于生成器表达式的惰性求值，它会**及早求值**（eager evaluation）。在声明了一个列表推导式时，序列中的所有数据都会被即时处理，并将处理后的完整列表存放在内存中。并且在推导过程中，对于输入序列的每个值都可能创建一个仅含一项元素的全新列表。所以当序列的数据量很大时，如读文件或读数据库，将会消耗大量内存并导致程序崩溃。所以，列表推导另一个最佳实践是：**使用生成器表达式代替数据量较大的列表推导**。生成式表达式将在后续章节进行介绍。
+
+## 可迭代对象、迭代器和生成器源码分析
+
+迭代，或称循环，是数据处理的基石。Python 中的可迭代类型的抽象基类定义在 `collections.abc` 模块中，从抽象层次来说，可以分为以下三类：
+
+- **可迭代对象**，`class Iterable(metaclass=ABCMeta)`，抽象类；
+- **迭代器**，`class Iterator(Iterable)`，继承自 Iterable 的抽象类；
+- **生成器**，`class Generator(Iterator)`，继承自 Iterator 的抽象类。
+
+在这三个抽象基类的实现中，都有一个名为 `__subclasshook__` 的钩子方法，用于将实现了特定方法的类绑定为这些抽象基类的虚拟子类。如下是可迭代对象 Iterable 的部分代码，钩子方法检查了类中有无实现 `__iter__` 方法，对于实现了的类，会被绑定为 Iterable 的虚拟子类。
+
+```python
+class Iterable(metaclass=ABCMeta):
+    @classmethod
+    def __subclasshook__(cls, C):
+        if cls is Iterable:
+            return _check_methods(C, "__iter__")
+        return NotImplemented
+```
+
+联系到鸭子类型一节中所说的“协议”的概念，可以得出结论：可迭代对象的协议需要实现 `__iter__` 方法；类似的，迭代器协议需要同时实现 `__iter__` 和 `__next__` 方法；生成器协议要更复杂一些，除了这两个方法外还需要实现  `send()`、`throw()` 和 `close()` 方法，这三个方法体现了生成器除了迭代之外的功能：可以用作**协程**。
+
+除了钩子方法之外，`collections.abc` 模块中还使用 register 关键字手动绑定了 Iterator 和 Generator 的虚拟子类。这里截取了部分源码：
+
+```python
+dict_keyiterator = type(iter({}.keys()))
+dict_valueiterator = type(iter({}.values()))
+dict_itemiterator = type(iter({}.items()))
+list_iterator = type(iter([]))
+range_iterator = type(iter(range(0)))
+set_iterator = type(iter(set()))
+str_iterator = type(iter(""))
+tuple_iterator = type(iter(()))
+
+Iterator.register(dict_keyiterator)
+Iterator.register(dict_valueiterator)
+Iterator.register(dict_itemiterator)
+Iterator.register(list_iterator)
+Iterator.register(range_iterator)
+Iterator.register(set_iterator)
+Iterator.register(str_iterator)
+Iterator.register(tuple_iterator)
+
+generator = type((lambda: (yield))())
+Generator.register(generator)
+```
+
+上述代码出现的所有内置类型，包括 list、range、set、str 和 tuple，都实现了 `__iter__` 方法，所以都是可迭代对象。特殊一点的是字典的键、值和键值对，也都分别被定义为可迭代的视图类型 KeysView、ValuesView 和 ItemsView。这些类型都是 Python 的集合类型，集合由于继承了 Iterable 类，所以 **Python 中的所有集合都是可迭代对象**。此处说的集合不是内置类型 set 而是 Collection，定义在 `collections.abc` 模块中。也有人将 Collection 称之为“容器”的，这里将其称之为集合而不是容器是为了与 `collections.abc` 模块中的另一个类 Container 做区分。集合类的钩子方法会去检测是否实现了 `__len__`、`__iter__` 和 `__contains__` 这三个方法。
+
+尽管上述所说的这些内置类型都是可迭代对象，但要注意它们并不是迭代器，被注册的是经过 `iter()` 方法包装后的类型。也就是说，访问这些内置类型的 `__iter__` 方法将会返回一个迭代器，即 `iter(iterable) -> iterator`。迭代器除了能被 for 循环遍历外，还能使用 `next()` 方法产出下一个值。编码时如果要使用 `next()` 方法，首先要注意对象是不是一个迭代器。
+
+```python
+>>> l = [1, 2]
+>>> isinstance(l, Iterator)
+False
+>>> iter(l)
+<list_iterator object at 0x106e2f640>
+>>> next(iter(l))
+1
+```
+
+除了可迭代对象和迭代器之外，`collections.abc` 模块中还定义了生成器类 Generator，并将形如 `type((lambda: (yield))())` 的类型注册为了生成器的虚拟子类。其中，yield 是一个关键字，意为产出一个值。**只要 Python 函数的定义中含有 yield 关键字，该函数就是生成器函数，调用生成器函数时会返回一个生成器对象**。`lambda: (yield)` 语句其实是定义了一个返回生成器函数的匿名函数，再调用这个生成器函数得到生成器对象，如下：
+
+```python
+>>> def gen():
+...     return (yield)
+... 
+>>> gen()
+<generator object gen at 0x104b36660>
+>>> type(gen())
+<class 'generator'>
+>>> type((lambda: (yield))())
+<class 'generator'>
+```
+
+生成器尤为重要，有必要将其作为单独的一节进行介绍。下一节我们将介绍生成器函数的执行过程，以及如何使用生成器表达式返回一个生成器对象。
+
+## 生成器
+
+所有生成器都是迭代器，因为生成器完全实现了迭代器接口。不过，根据《设计模式：可复用面向对象软件的基础》一书的定义，迭代器用于从集合中取出元素，而生成器用于“凭空”生成元素。通过斐波那契数列能很好地说明二者之间的区别：斐波纳契数列中的数有无穷多个，无法将它们都装在一个集合里，但是生成器可以在每次需要时生成一项元素。因此，尽管 Python 社区中经常将迭代器和生成器视为同一概念，你也要明白生成器所具有的特殊语义。
+
+### 生成器函数
+
+前面我们说到，生成器函数是包含了 yield 关键字的函数，调用生成器函数时会返回一个生成器对象。也就是说，生成器函数是生成器的工厂函数。因此，生成器函数和普通的函数有着显著的行为差异：即使没有 return 语句，生成器函数依然会返回一个生成器对象。就算有，定义在 yield 语句后的 return 返回值也会被忽略。
+
+```python
+>>> def gen():
+...     yield 1
+...     return 'a'
+... 
+>>> gen()
+<generator object gen at 0x10ddd9820>
+>>> list(gen())
+[1]
+```
+
+"yield" 这个单词，除了产出还有**让步**的含义，对于生成器函数中的 yield 来说，这两个含义都成立。让步体现在，生成器函数在执行到 yield 语句产出值后，会作出让步，暂停执行生成器，让调用方继续工作，直到需要下一个值时再调用 `next()`。下面使用 for 循环来更清楚地说明生成器函数定义体的执行过程。
+
+```python
+>>> def gen_AB():
+...     print('start')
+...     yield 'A'
+...     print('continue')
+...     yield 'B'
+...     print('end')
+... 
+>>> for c in gen_AB():
+...     print('-->', c)
+... 
+start
+--> A
+continue
+--> B
+end
+```
+
+迭代时，for 机制的作用与 `g = iter(gen_AB())` 一样，生成器的 `__iter__` 方法会返回生成器对象本身，然后每次迭代时调用 `next(g)`。
+
+- 在 for 循环中第一次隐式调用 next 函数时，会打印 'start'，然后停留在第一个 yield 语句，产出值 'A'；
+- 第二次隐式调用 next 函数时，会打印 'continue'，然后停留在第一个 yield 语句，产出值 'B'；
+- 第三次隐式调用 next 函数时，打印 'end'，到达函数定义体的末尾，导致生成器对象抛出 StopIteration 异常。for 机制会捕获异常，因此循环终止时不会报错。
+
+如果显式调用 `next()` 方法，那么生成器函数定义体被执行的过程如下：
+
+```python
+>>> g = iter(gen_AB())
+>>> next(g)
+start
+'A'
+>>> next(g)
+continue
+'B'
+>>> next(g)
+end
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+
+在这个例子中你可以看到，定义在生成器函数体内的 print 语句并没有在生成器函数被调用时就立即打印，而被延迟到调用 `next(g)` 时才打印。同样，如果在生成器函数中加入复杂的处理逻辑，该逻辑只在被 `next()` 调用时才进行处理，从而达到延迟处理的目的。我们将生成器的这一特性归纳为**惰性求值**（lazy evaluation），即尽可能地延后求值，只在需要时才进行求值。这样做的优点是可以节省内存，还可能避免无用的处理。
+
+与惰性求值相对的是**及早求值**（eager evaluation），比如之前介绍的列表推导，列表这种数据结构一定要求内部的元素是已明确其值的，并且会将完整的列表保存在内存中。因此，《Effective Python》中提出这么一条：**考虑用生成器来改写直接返回列表的函数**。实际上，Python 3 已经对一些原本原本返回列表的函数使用生成器进行了改写。比如 Python 2 中返回完整列表的 `range()` 函数，现在也返回一个类似生成器的对象。如果一定要让 `range()` 函数返回列表，必须明确指明，如 `list(range(100))`。
+
+定义生成器函数时，唯一需要留意的就是：**函数返回的那个迭代器是有状态的**，调用者不应该反复使用它。
+
+### 生成器表达式
+
+除了定义包含 yield 关键字的生成器函数可以返回生成器外，生成器表达式也可以返回生成器对象。相比于列表推导的及早求值，生成器表达式能够进行惰性求值：不会迫切地构建列表，而是返回一个生成器，按需产出元素。也就是说，如果说列表推导时构建列表的工厂，那么生成器表达式就是构建生成器的工厂。
+
+生成器表达式与列表推导的唯一区别是使用了一对圆括号 "()" 代替列表推导中的中括号 "[]"。我们使用之前定义的生成器函数 `gen_AB()` 来演示生成器表达式与列表推导之间的区别。
+
+```python
+>>> res1 = [x for x in gen_AB()]  # list comprehension
+start
+continue
+end
+>>> res1
+['A', 'B']
+>>> for x in res1:
+...     print('-->', x)
+... 
+--> A
+--> B
+>>> res2 = (x for x in gen_AB())  # generator expression
+>>> res2
+<generator object <genexpr> at 0x10dea8f20>
+>>> for x in res2:
+...     print('-->', x)
+... 
+start
+--> A
+continue
+--> B
+end
+```
+
+归因于列表的及早求值，在声明列表推导表达式时，`gen_AB()` 函数中的 print 语句被立即执行了，函数产出的两个值 'A'、'B' 也被存放在构建出的列表中。而生成器表达式则将这个过程推迟到值真正需要之时，即 for 循环隐式调用 `next()` 之时。
+
+前面提到，生成器对象是有状态的，这里体现在，一个生成器对象产出的值只能被消费一次，除非定义一个新的个生成器对象重新绑定。你可以想象成，生成器对象中存在不能回头的“指针”，每次调用 `next()` 方法时指向下一个元素，这个过程不可逆。所以对于同一个生成器对象重复调用时可能会产生意想不到的结果。比如下面代码中第二次调用 `list(res2)` 返回一个空列表，因为第一次调用时“指针”就已经到头了。
+
+```python
+>>> res2 = (x for x in gen_AB())
+>>> list(res2)
+start
+continue
+end
+['A', 'B']
+>>> list(res2)
+[]
+>>> next(res2)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+
+所以如果要对生成器对象进行多次迭代，一种方法是使用列表将生成器中的所有元素备份下来，另一种是定义一个新的生成器对象重新绑定。由此可见，尽管生成器对象相比列表能够通过惰性求值节省内存，但如果每次迭代时定义新的生成器对象，求值过程也会被重复多次。而列表推导只会在声明时进行一次求值，并将结果保存在列表中可供多次迭代调用，这其实是一种空间消耗和时间消耗的权衡。
+
+### yield from
+
+刚才所提到的生成器产出值被消费的概念，也侧面体现了生成器可以作为“协程”的语义。“协程”从字面意思理解就是协作的进程，协作的进程之间需要进行通信，就需要消费者和生产者之间建立通道。从 Python 3.3 开始引入了一个新的句法：`yield from`，类似于其他语言中的 await 关键字。它可以在两个生成器之间建立通道，将产出的值从一个生成器传输到另一个生成器。
+
+如果生成器函数需要产出其他生成器的值，传统的做法是使用 for 循环遍历生成器的元素并产出。以下定义了一个能够产出多个生成器产出值的生成器函数。
+
+```python
+>>> def chain(*iterables):
+...     for it in iterables:
+...         for i in it:
+...             yield i
+... 
+>>> g1 = (x for x in 'ABC')
+>>> g2 = (x for x in (0, 1))
+>>> list(chain(g1, g2))
+['A', 'B', 'C', 0, 1]
+```
+
+引入的 `yield from` 句法可以直接将一个生成器的所有产出值产出，而不用遍历生成器对象。因此我们可以编写只有一层的 for 循环：
+
+```python
+>>> def chain(*iterables):
+...     for it in iterables:
+...         yield from it
+... 
+>>> g1 = (x for x in 'ABC')
+>>> g2 = (x for x in (0, 1))
+>>> chain(g1, g2)
+<generator object chain at 0x10dea8e40>
+>>> list(chain(g1, g2))
+['A', 'B', 'C', 0, 1]
+```
+
+chain 函数依然返回一个生成器对象，其中的 `yield from it` 语句对 it 对象所做的第一件事是调用 `iter(it)` 获得一个迭代器，所以 it 对象可以是任何可迭代对象。我们将 `yield from <iterable>` 表达式中用于获取值的 `<iterable>` 称为**子生成器**（subgenerator），即上面代码中的 g1、g2；将包含了 `yield from` 语句的生成器函数，即 chain 函数，称为委派生成器。`yield from` 的主要功能是打开双向通道，把最外层的调用层与最内层的子生成器连接起来，这样二者可以直接发送和产出值。
+
+上述的例子只能勉强算一个协程的案例，其中的“协作”部分体现的不够明显，只是简单的将一个生成器的值传输给另一个生成器产出。真正的协作应该是通过生成器对象的 `send()` 方法将值从客户端传输给生成器。在后面章节我们会专门介绍协程，里面会提及生成器的 `send()`、`throw()` 和 `close()` 方法，以及 `yield from` 句法的其他作用。
+
+## itertools
+
+# Lecture 4：函数
 
 ## 函数是一等公民
 
@@ -1564,5 +2037,8 @@ Jack 18
 
 因此，装饰器非常适用于有切面需求的场景，诸如：插入日志、性能测试、事务处理、缓存、权限校验等。装饰器是解决这类问题的绝佳设计。通过装饰器，我们可以抽离出与函数功能本身无关的代码到装饰器中，从而实现面向切面编程。
 
-# Lecture 4
+##  函数的参数
+
+## functools
+
 
