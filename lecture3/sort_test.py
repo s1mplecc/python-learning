@@ -1,4 +1,10 @@
+import pytest
+
+
 def sort(iterable, *, key=None, reverse=False):
+    if key is not None and not callable(key):
+        raise TypeError(f'{type(key)} object is not callable')
+
     _l = list(iterable)
     for i in range(len(_l)):
         for j in range(i):
@@ -28,3 +34,8 @@ class TestFunction:
         _l = ['a', 'aab', 'ab', 'aabb']
         result = ['aabb', 'aab', 'ab', 'a']
         assert sort(_l, key=len, reverse=True) == result
+
+    def test_should_raise_error_when_key_function_is_not_callable(self):
+        _l = [1, 5, 3, 2, 7, 4]
+        with pytest.raises(TypeError) as e:
+            sort(_l, key=1)
