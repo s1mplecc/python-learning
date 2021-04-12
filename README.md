@@ -2055,8 +2055,416 @@ Jack 18
 
 因此，装饰器非常适用于有切面需求的场景，诸如：插入日志、性能测试、事务处理、缓存、权限校验等。装饰器是解决这类问题的绝佳设计。通过装饰器，我们可以抽离出与函数功能本身无关的代码到装饰器中，从而实现面向切面编程。
 
-##  函数的参数
+## 可调用对象
 
-## functools
+除了用户定义的函数，调用运算符，即 "()" 括号对，还能应用到其他对象上。我们将能应用调用运算符的对象称为**可调用对象**，通过内置的 `callable()` 方法可以判断对象是否是可调用对象。在 Python 3 的[数据模型文档](https://docs.python.org/3/reference/datamodel.html)中，一共列出了 7 种可调用对象：
+
+- **内置函数和内置方法**：使用 C 语言（CPython）实现的函数和方法，如 `len()` 和 `alist.append()`；
+- **用户定义的函数**：包括使用 def 创建的普通函数和 lambda 创建的匿名函数；
+- **实例方法与类方法**：定义在类中的方法，实例方法是指第一个参数为 `self` 的方法，类方法是指第一个参数为 `cls` 的方法；
+- **类**：对类使用调用运算符，如 `C()`，会执行类的 `__new__` 方法创建类的实例，然后执行 `__init__` 初始化；
+- **类的实例**：如果类定义了 `__call__` 方法，那它的实例可以作为函数调用；
+- **生成器函数**：内部使用了 yield 关键字的函数，调用生成器函数会返回生成器对象；
+- **协程函数和异步生成器函数**：从 Python 3.5 开始支持使用 `async def` 关键字来定义协程函数，如果内部包含 yield 关键字则被称为异步生成器函数。该函数被调用时会返回一个异步迭代器对象。
+
+### 自定义的可调用类型
+
+在装饰器一节，我们已经认识到了，装饰器不仅可以是函数，也可以是类。任何类只要实现了 `__call__` 方法，那它就是可调用对象，就可以表现的如同函数。因此，我们可以编写用户自定义的可调用类型，将其用在任何期待函数的地方。下面我将通过 Java 和 Python 两种语言，展现它们在可调用类型上的异同。
+
+假设现有一副扑克，要求按照 `A, 2 ~ 10, J, Q, K` 的顺序进行排序。在 Java 中，可以通过 `Collections.sort()` 集合类的接口对一个集合进行排序。Python 也提供了内置的 `sorted()` 方法，对可迭代对象进行排序。但两种语言都不支持直接对字符串和数字类型进行比较，所以还需要实现特定的排序逻辑。
+
+Java 中要实现排序逻辑通常有两种方法。一种是让类实现 Comparable 接口，重写其中的 `compareTo()` 抽象方法：
+
+```java
+public class Poker implements Comparable<Poker> {
+    @Override
+    public int compareTo(Poker otherPoker) {
+        // return ...
+    }
+}
+```
+
+这里重点想展示第二种方法：新建一个实现了 Comparator 接口的比较器类，重写其 `compare()` 抽象方法。
+
+```java
+public class PokerComparator implements Comparator<Poker> {
+    @Override
+    public int compare(Poker firstPoker, Poker secondPoker) {
+       // return ...
+    }
+}
+
+PokerComparator pokerComparator = new PokerComparator();
+Collections.sort(pokers, pokerComparator);
+```
+
+对于这种方法，需要将比较器对象作为第二个参数传入 `Collections.sort()` 接口中。由于 Java 对象不能将函数作为参数的限制，我们定义了一个辅助类，实际上这个类对我们而言只有一个方法有用，那就是 `compare()` 方法，`Collections.sort()` 接口会去调用该方法，所以它就是对应的排序逻辑，只不过是用类实现的。
+
+Python 的函数可以直接作为参数传递，但我们接下来要讲的是如何定义一个类似 Comparator 的类，让它能实现排序逻辑。
+
+Python 内置的排序方法 `sorted()`，**允许接收一个关键字参数 key 作为排序的键**，比如 `key=len` 时依照元素的长度进行排序。对于扑克牌 A ~ K，可以维护一个映射数字类型的字典，比如将 'K' 映射到 13，排序时直接通过映射的数值大小排序。维护一个字典，函数当然可以做到，但将其作为类的属性更加合适。可以定义一个扑克序列类，在初始化这个类时就构建好字典。为了让类可被调用，还需要实现 `__call__` 方法，直接返回字典中扑克牌对应的数值作为排序的键。
+
+```python
+class PokerOrder:
+    def __init__(self):
+        self._seq = {str(i): i for i in range(2, 11)}
+        self._seq.setdefault('J', 11)
+        self._seq.setdefault('Q', 12)
+        self._seq.setdefault('K', 13)
+        self._seq.setdefault('A', 1)
+
+    def __call__(self, item):
+        return self._seq.get(item)
+
+    def show(self):
+        print(self._seq)
+```
+
+由于 PokerOrder 类实现了 `__call__` 方法，它的实例会被 `callable()` 方法判定为可调用对象，可以直接应用调用运算符，传入扑克牌值返回对应数值。在排序时，将 PokerOrder 类的实例作为关键字传入，相当于将序列中的每项元素执行 `__call__` 方法返回的值作为键进行排序。
+
+```python
+>>> pokerorder = PokerOrder()
+>>> pokerorder.show()
+{'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 1}
+>>> callable(pokerorder)
+True
+>>> pokerorder('K')
+13
+>>> sorted(['K', '3', 'A', '7', 'J', 'Q', '2'], key=pokerorder)
+['A', '2', '3', '7', 'J', 'Q', 'K']
+```
+
+将类定义为可调用类型，不仅能维护内部属性，还能自定义方法，比如如上代码中的 `show()` 方法。除此之外，在实现更复杂的排序逻辑时，比如按照花色排序等，使用类要比使用函数更合适。甚至如果你觉的 PokerOrder 类应该被实现为单例模式，还可以添加 `__new__` 方法保证创建类中的字典只会被创建一次。
+
+## 函数对象与方法对象
+
+Python 中一切皆对象，不管是函数还是类中定义的方法都是对象。对于类中的实例方法来说，通过类访问该实例方法，如 `C.foo`，会返回一个**函数对象**，即 `function` 类型；通过实例访问实例方法，如 `c.foo`，会返回一个**绑定方法对象**，即 `method` 类型，该方法对象绑定在实例上。对于类方法而言，无论是通过类还是实例访问，都返回绑定方法对象，该方法对象绑定在类上。
+
+```python
+>>> class C:
+...     def foo(self, x): print(x)
+...     @classmethod
+...     def bar(cls, x): print(x)
+... 
+>>> C.foo
+<function C.foo at 0x10d613f70>
+>>> type(C.foo)
+<class 'function'>
+>>> c = C()
+>>> c
+<__main__.C object at 0x10b0a5820>
+>>> c.foo
+<bound method C.foo of <__main__.C object at 0x10b0a5820>>
+>>> type(c.foo)
+<class 'method'>
+>>> C.bar
+<bound method C.bar of <class '__main__.C'>>
+>>> c.bar
+<bound method C.bar of <class '__main__.C'>>
+```
+
+方法对象中包含一些特殊的只读属性：
+
+- `__self__` 为类实例对象本身；
+- `__func__` 为函数对象；
+- `__doc__` 为方法的文档，与 `__func__.__doc__` 作用相同；
+- `__name__` 为方法名称，与 `__func__.__name__` 作用相同；
+- `__module__` 为方法所属模块的名称，没有则为 None。
+
+**访问方法对象的 `__func__` 属性会获得函数对象**。虽然两者都能通过调用运算符 "()" 调用，但函数对象还需要手动传入第一个位置的参数，即 `self` 和 `cls` 参数，方法对象则不需要。原因在于，**调用方法对象会调用对应的下层函数对象 `__func__`，并将 `__self__` 参数插入到参数列表的开头**，如果是实例方法则插入类实例，如果是类方法则插入类本身。
+
+```python
+>>> class C:
+...     def foo(self, x): print(x)
+...     @classmethod
+...     def bar(cls, x): print(x)
+... 
+>>> c = C()
+>>> c.foo(1)
+1
+>>> c.foo.__func__(c, 1)
+1
+>>> C.bar(1)
+1
+>>> C.bar.__func__(C, 1)
+1
+```
+
+就如同上述代码所展示的，对于实例方法 `foo()` 来说，调用 `c.foo(1)` 相当于调用 `c.foo.__func__(c, 1)`。对于类方法 `bar()` 来说，无论是调用 `c.bar(1)` 还是 `C.bar(1)` 都相当于调用 `C.bar.__func__(C, 1)`。
+
+### 函数内省
+
+将函数作为对象处理，可以用于运行时内省，类似于 Java 中的反射，可以在运行时获取函数的信息，比如注解、闭包、参数默认值等。下面列出了一些函数对象特有的属性和方法：
+
+```python
+>>> def func(): ...
+... 
+>>> sorted(set(dir(func)) - set(dir(object)))
+['__annotations__', '__call__', '__closure__', '__code__', '__defaults__', '__dict__', '__get__', '__globals__', '__kwdefaults__', '__module__', '__name__', '__qualname__']
+```
+
+`dir()` 函数可以查看一个模块或一个类中的所有属性，当然方法也算方法属性。上述代码将 func 函数对象与常规对象 object 的属性集合做了一个差集，只打印函数对象特有的属性。下表对这些特有属性做了简要说明。
+
+| 名称                | 类型             | 说明                      |
+|-------------------|----------------|-------------------------|
+| `__annotations__` | dict           | 参数和返回值的注解               |
+| `__call__`        | method-wrapper | 实现 () 运算符，即可调用对象协议        |
+| `__closure__`     | tuple          | 函数闭包，即自由变量的绑定（没有则是None）  |
+| `__code__`        | code           | 编译成字节码的函数元数据和函数定义体      |
+| `__defaults__`    | tuple          | 形式参数的默认值                |
+| `__get__`         | method-wrapper | 实现只读描述符协议               |
+| `__globals__`     | dict           | 函数所在模块中的全局变量            |
+| `__kwdefaults__`  | dict           | 仅限关键字形式参数的默认值           |
+| `__name__`        | str            | 函数名称                    |
+| `__qualname__`    | str            | 函数的限定名称，如 Random.choice |
+
+函数内省经常被一些框架使用发挥出强大效果。比如 `__defaults__`、`__code__` 和 `__annotations__` 属性，经常被 IDE 用来提取关于函数签名的信息，我们之前也提到过 IDE 和 lint 工具使用函数注解做静态类型检查。还比如一些 Python Web 后端框架，可以自动解析 HTTP 请求中的参数将其注入到接口函数中执行，而不用程序员手动处理。
+
+## 函数的参数
+
+Python 最好的特性之一就是提供了极为灵活的参数处理机制。除了基础的定位参数（positional argument）之外，Python 还支持传入关键字参数（keyword argument），如我们之前所使用的内置方法 `sorted()`，就支持关键字参数 key 与 reverse。关键字参数允许提供默认值，如果无默认值一般为 None。
+
+```python
+'''
+Return a new list containing all items from the iterable in ascending order.
+ 
+A custom key function can be supplied to customize the sort order, and the
+reverse flag can be set to request the result in descending order.
+'''
+sorted(iterable, /, *, key=None, reverse=False)
+```
+
+Java 5 中引入了不定长参数，允许在形参后添加 `...` 表示该形参可以接收多个参数值，多个参数将被当做数组传入，如 `void foo(String... args)`。Python 也支持**不定长参数**，它的形式是在参数名称前添加星号运算符，如 `*args`，不定长参数将被打包成**元组**传入。除此之外，Python 还支持传入**非具名关键字参数**，即没有明确指定名称的关键字参数，如 `**kwargs`，参数将会被打包成一个**字典**传入。
+
+```python
+>>> def func(*args, **kwargs):
+...     print('args: ', args)
+...     print('kwargs: ', kwargs)
+... 
+>>> func(0, 'a', key1=1, key2='b') 
+args: (0, 'a')
+kwargs: {'key1': 1, 'key2': 'b'}
+```
+
+如果同时使用 `*args` 和 `**kwargs`，`*args` 参数必须要在 `**kwargs` 之前。它们可以与其他类型的参数混合使用，但**参数的顺序必须是：定位参数，默认参数，不定长参数，具名关键字参数和非具名关键字参数**。即如下形式：
+
+```python
+>>> def record(name, age=18, *phones, email=None, **other):
+...     print('name: ', name)
+...     print('age: ', age)
+...     print('phones: ', phones)
+...     print('email: ', email)
+...     print('other: ', other)
+... 
+>>> record('Jack', 20, 123456, 654321, email='abc@email.com', height=180, weight=90)
+name: Jack
+age: 20
+phones: (123456, 654321)
+email: abc@email.com
+other: {'height': 180, 'weight': 90}
+```
+
+其中，默认参数与具名关键字参数形式上一样，默认参数通常是用来简化函数调用者的传参的。这两者可以通过位置进行区分，在不定长参数之前的是默认参数，之后的是关键字参数。如果要传入不定长参数，默认参数就不能省略，此时默认参数被视为定位参数（默认值失去了意义），其后的非关键字参数会被不定长参数 `*phones` 捕获。如果省略了默认参数，那么不定长参数的第一个元素会被赋值给默认参数。具名关键字参数则没有这一限制。
+
+```python
+>>> record('Jack', 123456, 654321, height=180)
+name:  Jack
+age:  123456
+phones:  (654321,)
+email:  None
+other:  {'height': 180}
+```
+
+**仅限关键字参数**（keyword-only argument）是 Python 3 新增的特性。如果定义函数时想指定仅限关键字参数，需要将它们放在带有 `*` 的不定长参数之后。如果不想支持不定长参数，可以在签名中放一个 `*`，标志着定位参数到此终结，之后的参数只能以关键字形式提供，即仅限关键字参数。如下所示：
+
+```python
+>>> def func(a, *, b, c=3): 
+...     return a, b, c
+... 
+>>> func(1, b=2)
+(1, 2, 3)
+>>> func(1, b=2, c=4)
+(1, 2, 4)
+```
+
+可以看到，仅限关键字参数不一定要有默认值，但如果没有默认值，调用函数时必须传入该参数。内置方法 `sorted()` 的参数就包含一个 `*`，其后的 key 和 reverse 参数就是带有默认值的仅限关键字参数。
+
+### 函数参数的最佳实践
+
+对于函数参数如何正确的使用，《Effective Python》给出了一些建议。我结合自己的一些看法，给出如下几点建议。
+
+第一点，**使用不定长参数减少视觉杂讯**。这是一种比喻，目的是使函数签名内容不要过于过多，而应凸显重要部分。如果一个函数支持传入多个相同类型的对象，或对不同类型的对象做相同处理，可以考虑不定长参数（或者组合成一个可迭代对象传入）。拿 Python 的内置方法来举例，`map()` 的最后一个参数就是不定长参数 `*iterables`，支持传入多个可迭代对象；`print()` 方法的第一个参数 `*values` 也是不定长参数，对于传入多个参数，不管它们是什么类型都能将其打印。
+
+第二点，**使用关键字参数来表达可选的行为**。关键字参数的名称可以辅助调用者明确参数的用途，比如 `sorted()` 方法中的 reverse 参数用来反向排序。关键字参数还能提供默认值，就如同一个开关，如果使用函数默认功能，就不需要操心这些参数，还可以避免传参时的重复代码。如果想开启附加功能，可以传入指定的关键字参数。带有默认值的关键字参数还能在不改变调用代码的基础上为函数添加新功能，保证了代码的兼容性。从另一种角度看，带有默认值的关键字参数提供了类似多态重载的动态语言特性，虽然 Python 并不支持函数重载。
+
+第三点，**使用仅限关键字参数来确保代码清晰**。关键字参数可以提高可读性，但不能保证调用者一定使用关键字来明确指出参数的含义，关键字参数可以通过位置来赋值，比如定义的函数 `def func(a, b=1)` 可以通过 `func(1, 2)` 来为关键字参数 b 赋值。如果有必要，可以使用仅限关键字参数来强制调用者使用关键字。比如 `sorted()` 方法签名 `*` 后指定的仅限关键字参数 key 和 reverse。
+
+第四点，**使用 None 而不是可变序列为参数默认值赋空**。绝对不要将参数默认值指定为空的可变序列 `[]` 和 `{}`。参数的默认值会在模块被加载时执行一次并绑定，如果默认值定义为了可变序列，那么以默认形式调用函数的代码都会共享同一份序列，从而导致难以预料的结果。比如如下解析 JSON 的函数，默认值为空字典，在解析出错时将其返回，导致两个对象共用一个字典。解决的方法是使用 None 作为参数默认值，在函数内重新赋值为空字典，并添加文档说明参数默认值的实际行为。如果参数默认值是动态变化的，如当前时间，也应如此做。总之，要避免参数默认值是可变的。
+
+```python
+>>> def decode(data, default={}):
+...     try:
+...         return json.loads(data)
+...     except ValueError:
+...         return default
+... 
+>>> foo = decode('bad data')
+>>> bar = decode('also bad')
+>>> foo['a'] = 1
+>>> bar
+{'a': 1}
+>>> foo is bar
+True
+```
+
+第五点，**避免修改传入参数的值**。函数式编程中非常强调的一点是，函数要无副作用。无副作用指的是函数内部不与外部互动（最典型的情况是，修改全局变量的值），产生除函数本身运算以外的其他效果。函数无副作用，意味着函数要保持独立，不依赖于上下文环境，不得修改外部变量包括传入参数的值。即使函数要在传入参数本身上做运算，也应该新建一个副本将其返回。就拿 `sorted()` 来说，即使排序前后元素位置没有变化，也返回一个全新的列表。除此之外，`map()`、`filter()` 等其他内置方法也都遵循这一点，不对参数本身做修改。
+
+```python
+>>> l = [1, 2, 3]
+>>> sorted(l)
+[1, 2, 3]
+>>> sorted(l) is l
+False
+```
+
+### 自定义的 `sorted()` 函数
+
+在本章中我一直拿内置的 `sorted()` 函数来举例，不妨自己来实现一个。借此案例我想演示：如何使用仅限关键字参数，如何编写高阶函数，以及如何使用卫语句对异常参数进行处理。
+
+这里的排序算法不是关键，使用的是最简单的冒泡排序算法。函数签名上尽可能与 `sorted()` 保持一致，为了保证函数无副作用，函数内部新建了一个列表副本保存传入可迭代序列的值。
+
+```python
+def sort(iterable, *, key=None, reverse=False):
+    if key is not None and not callable(key):
+        raise TypeError(f'{type(key)} object is not callable')
+
+    _l = list(iterable)
+    for i in range(len(_l)):
+        for j in range(i):
+            if key is None:
+                if _l[j] > _l[i]:
+                    _l[j], _l[i] = _l[i], _l[j]
+            else:
+                if key(_l[j]) > key(_l[i]):
+                    _l[j], _l[i] = _l[i], _l[j]
+    if reverse:
+        _l.reverse()
+    return _l
+```
+
+仅限关键字参数是指在 `*` 运算符之后定义的关键字参数，在调用时必须指定关键字名称，如上述函数中的 key 和 reverse 关键字。
+
+在函数的开头，首先判断传入的 key 参数在非 None 情况下是否是可调用的，若不可调用则抛出 TypeError 异常。这种 if 条件分支语句叫做**卫语句**（guard clause），目的是将可能出错的每个分支做单独检查，要么抛出异常要么立即返回。通过在函数头部的集中处理及早抛出各种可能的异常（又称迅速失败），避免无效的运算。函数真正的实现代码放在卫语句之后，保证运行到此处时所有条件都已通过。
+
+通过了卫语句检测的 key 参数是可调用的，在函数内部直接使用 `key()` 调用。对于接收函数作为参数的 `sort()` 函数，我们将其称之为**高阶函数**，这也是 Python 函数式编程特性之一。
+
+下面是测试方法：
+
+```python
+def test_should_sort_number_sequence(self):
+    _l = [1, 5, 3, 2, 7, 4]
+    result = [1, 2, 3, 4, 5, 7]
+    assert sort(_l) == result
+
+def test_should_sort_sequence_with_key_function(self):
+    _l = ['a', 'aab', 'ab', 'aabb']
+    result = ['a', 'ab', 'aab', 'aabb']
+    assert sort(_l, key=len) == result
+
+def test_should_sort_sequence_with_key_function_and_reverse(self):
+    _l = ['a', 'aab', 'ab', 'aabb']
+    result = ['aabb', 'aab', 'ab', 'a']
+    assert sort(_l, key=len, reverse=True) == result
+
+def test_should_raise_error_when_key_function_is_not_callable(self):
+    _l = [1, 5, 3, 2, 7, 4]
+    with pytest.raises(TypeError) as e:
+        sort(_l, key=1)
+```
+
+pytest 框架支持对抛出异常的测试，使用 with 语句加 `pytest.raises()` 方法可以断言定义体内调用的方法是否会抛出对应的异常。
+
+### `*` 与 `**` 运算符
+
+在 Python 中，`*` 与 `**` 运算符除了能用作数学运算符中的乘法和乘方之外，还有一些其他的巧妙用法。之前讨论的函数中的不定长参数 `*args` 和不具名关键字参数 `**kwargs` 是它们的经典用法之一。此外，这两个运算符还可以用来对参数列表进行**拆包**。
+
+运用 `*` 运算符可以把一个可迭代对象拆开作为函数的参数：
+
+```python
+>>> def func(a, b):
+...     print(f'a={a}, b={b}')
+... 
+>>> func(1, 2)
+a=1, b=2
+>>> t = (1, 2)
+>>> func(*t)
+a=1, b=2
+```
+
+类似的，运用 `**` 运算符可以把一个字典拆开作为函数的参数，同名键会绑定到对应的具名参数上，如果函数还定义了非具名关键字参数 `**kwargs`，除了绑定的同名键外余下参数会被 `**kwargs` 捕获。
+
+```python
+>>> def func(a=None, b=None, **kwargs):
+...     print(f'a={a}, b={b}, kwargs={kwargs}')
+... 
+>>> d = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+>>> func(**d)
+a=1, b=2, kwargs={'c': 3, 'd': 4}
+```
+
+`*` 运算符对于函数参数中的可迭代对象拆包概念，在 Python 3 被扩展到了**平行赋值**。在平行赋值中，`*` 前缀只能被用在一个变量名前，但这个变量可以出现在赋值表达式的任何位置，用来处理剩下的元素。拆包所赋值的元素是列表类型，即使其中只有一个元素。
+
+```python
+>>> a, b, *rest = range(5)
+>>> a, b, rest
+(0, 1, [2, 3, 4])
+>>> a, *rest, d, e = range(5)
+>>> a, rest, d, e
+(0, [1, 2], 3, 4)
+>>> a, *rest, c, d, e = range(5)
+>>> a, rest, c, d, e
+(0, [1], 2, 3, 4)
+```
+
+## lambda 表达式
+
+Python 中的 lambda 关键字用于创建**匿名函数**。lambda 表达式的格式如下：
+
+```python
+lambda arguments : statement
+```
+
+表达式以 lambda 关键字开头，冒号 ":" 左侧是函数的**传入参数**，当有多个入参时使用逗号划分开，冒号右侧是**返回值**的表达式语句，函数会根据表达式计算结果并将其返回。lambda 表达式会创建一个函数对象，可以对其赋值并如同普通函数一样使用。下面定义了一个求平方的 lambda 表达式：
+
+```python
+>>> square = lambda x : x * x
+>>> square
+<function <lambda> at 0x101631e50>
+>>> square(3)
+9
+```
+
+lambda 句法只是语法糖，上述定义的 lambda 表达式与如下使用 def 关键字定义的普通函数没有本质区别，甚至 lambda 表达式的功能要更加受限。由于 Python 简单的句法限制了 lambda 定义体只能使用纯表达式，不能进行赋值，也不能使用 while 和 try 等 Python 语句。
+
+```python
+>>> def square(x):
+...     return x * x
+... 
+>>> square
+<function square at 0x101631dc0>
+```
+
+在 Python 中，**lambda 表达式的通常作用是作为参数传入给高阶函数**。比如在列表推导一节介绍的 map、filter 和 reduce 函数，这些函数接收一个函数作为参数，如果不想额外定义函数，那么使用 lambda 表达式创建匿名函数就是最佳的应用场景。
+
+```python
+>>> list(map(lambda x : x * x, [1, 2, 3]))
+[1, 4, 9]
+>>> list(filter(lambda x : x < 2, [1, 2, 3]))
+[1]
+```
+
+除了上述这种应用场景之外，Python 很少使用匿名函数。受到句法的限制，lambda 表达式无法实现复杂的函数功能。同时，在使用 lambda 表达式时要尽可能保证表达式的清晰简短，否则冗长的 lambda 表达式将会导致代码难以阅读。此时，应该使用 def 关键字创建普通函数，即《Effective Python》所提倡的：**使用辅助函数来取代复杂的表达式**，并赋予函数清晰的名称以提高代码可读性。
+
+## functools 模块
 
 
