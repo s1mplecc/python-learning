@@ -38,3 +38,10 @@ class TestClassMethod:
         arg1, arg2 = Demo.static_method(1, 2)
         assert arg1 == 1
         assert arg2 == 2
+
+    def test_should_create_person_instance_by_class_method(self):
+        t = ('Jack', 20, 'abc@email.com')
+        p = Person.fromtuple(t)
+
+        assert p.name == 'Jack'
+        assert p.age == 20
