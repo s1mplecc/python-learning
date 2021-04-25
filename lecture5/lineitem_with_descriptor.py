@@ -5,6 +5,12 @@ class Quantity:
     def __init__(self, attribute):
         self.attribute = attribute
 
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        else:
+            return instance.__dict__[self.attribute]
+
     def __set__(self, instance, value):
         if value >= 0:
             instance.__dict__[self.attribute] = value
