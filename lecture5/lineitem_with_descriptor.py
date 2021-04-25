@@ -6,7 +6,7 @@ class Quantity:
         if value >= 0:
             instance.__dict__[self.attribute] = value
         else:
-            raise ValueError('item amount must >= 0')
+            raise ValueError(f'{self.attribute} must >= 0')
 
 
 class LineItem:
@@ -24,3 +24,5 @@ class LineItem:
 if __name__ == '__main__':
     item = LineItem(1.0, 5)
     print(item.amount)
+    # item.amount = -1
+    item.price = -1

@@ -18,7 +18,7 @@ class LineItem:
         if value >= 0:
             self._amount = value
         else:
-            raise ValueError('item amount must >= 0')
+            raise ValueError('amount must >= 0')
 
 
 class TestLineItem:
