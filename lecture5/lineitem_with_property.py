@@ -22,7 +22,7 @@ class LineItem:
 
 
 class TestLineItem:
-    def test_should_access_attribute_with_property(self):
+    def test_should_access_attribute_by_property(self):
         item = LineItem(1.0, 5)
         assert item.amount == 5
         assert item.total_price() == 5.0
