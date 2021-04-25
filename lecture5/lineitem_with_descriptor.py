@@ -1,3 +1,6 @@
+import pytest
+
+
 class Quantity:
     def __init__(self, attribute):
         self.attribute = attribute
@@ -21,8 +24,18 @@ class LineItem:
         return self.price * self.amount
 
 
-if __name__ == '__main__':
-    item = LineItem(1.0, 5)
-    print(item.amount)
-    # item.amount = -1
-    item.price = -1
+class TestLineItem:
+    def test_should_access_attribute_by_descriptor(self):
+        item = LineItem(1.0, 5)
+        assert item.price == 1.0
+        assert item.amount == 5
+        assert item.total_price() == 5.0
+        assert 'amount' in item.__dict__ and 'price' in LineItem.__dict__
+        assert 'amount' in LineItem.__dict__ and 'price' in LineItem.__dict__
+
+    def test_should_raise_value_error_when_set_negative_value(self):
+        item = LineItem(1.0, 5)
+        with pytest.raises(ValueError) as e:
+            item.price = -1
+        with pytest.raises(ValueError) as e:
+            item.amount = -1
