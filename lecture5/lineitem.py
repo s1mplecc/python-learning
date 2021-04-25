@@ -36,7 +36,7 @@ class TestLineItem:
         with pytest.raises(ValueError) as e:
             item.amount = -1
 
-    def test_should_modify_amount_directly_by_dict(self):
+    def test_should_set_negative_amount_directly_by_instance_dict(self):
         item = LineItem(1.0, 5)
         item.__dict__['_amount'] = -1
         assert item.amount == -1
