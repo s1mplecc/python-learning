@@ -1,7 +1,10 @@
-class Dict(dict):
+from collections import UserDict
+
+
+class Dict(UserDict):
     def __setitem__(self, key, value):
         print('2rd be called')
-        super().__setitem__(key, value)
+        super().__setitem__(key, value * 2)
 
 
 class SetOnceMappingMixin:
