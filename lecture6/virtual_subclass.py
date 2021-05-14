@@ -21,13 +21,15 @@ class Poker:
         self.suits = ('Spade', 'Heart', 'Diamond', 'Club')
         self.numbers = (*range(2, 11), 'J', 'Q', 'K', 'A')
 
-    def __len__(self):
-        return 52
-
     def draw(self):
         suit = self.suits[random.randint(0, 3)]
         number = self.numbers[random.randint(0, 12)]
         return suit, number
+
+
+class Capsule:
+    def draw(self):
+        ...
 
 
 class TestVirtualSubclass:
@@ -36,5 +38,5 @@ class TestVirtualSubclass:
         assert isinstance(Poker(), Drawable)
 
     def test_should_bind_to_virtual_subclass_by_subclasshook_method(self):
-        assert issubclass(Poker, Sized)
-        assert isinstance(Poker(), Sized)
+        assert issubclass(Capsule, Drawable)
+        assert isinstance(Capsule(), Drawable)
