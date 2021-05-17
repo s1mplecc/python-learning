@@ -1,6 +1,5 @@
 import random
 from abc import ABC, abstractmethod
-from collections.abc import Sized
 
 
 class Drawable(ABC):

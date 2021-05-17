@@ -11,7 +11,7 @@ class Container(ABC):
 
     @abstractmethod
     def pop(self):
-        """Remove and return item. Raises IndexError if sequence is empty."""
+        """Remove and return item. Raises IndexError if container is empty."""
 
     @abstractmethod
     def push(self, item):
