@@ -15,7 +15,7 @@ class Container(ABC):
 
     @abstractmethod
     def push(self, item):
-        """Add item"""
+        """Add item."""
 
     def inspect(self):
         return self._items
