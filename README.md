@@ -3186,7 +3186,7 @@ _abc_negative_cache_version: 45
 
 Python 的容器抽象基类定义在 `collections.abc` 模块中，其 UML 类图如下所示：
 
-![162525d70561a8d42f3e5007ef176c0c.png](evernotecid://158BCD08-F1F3-43B5-914B-4EB5ADC3ABA7/appyinxiangcom/18284037/ENResource/p727)
+![162525d70561a8d42f3e5007ef176c0c.png](gitbook/images/container-uml.png)
 
 下面我们尝试使用 Python 中的抽象基类实现一个自定义的容器类型。为了简化，这个容器类型仅支持新增 `push()` 和删除 `pop()` 两个操作。由于不同子类的具体实现不同，比如栈是先进后出，队列是先进先出，所以这两个方法被定义为抽象方法。此外还提供了检视容器元素的 `inspect()` 方法，由于实现逻辑相同，因此 `inspect()` 可以是具体方法。
 
