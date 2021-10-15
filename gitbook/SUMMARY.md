@@ -34,3 +34,8 @@
   * [特性](di-wu-zhang-lei-yu-yuan-lei/te-xing.md)
   * [描述符](di-wu-zhang-lei-yu-yuan-lei/miao-shu-fu.md)
   * [元类 \[TODO\]](di-wu-zhang-lei-yu-yuan-lei/yuan-lei-todo.md)
+* [第六章：面向对象](di-liu-zhang-mian-xiang-dui-xiang/README.md)
+  * [封装](di-liu-zhang-mian-xiang-dui-xiang/feng-zhuang.md)
+  * [抽象](di-liu-zhang-mian-xiang-dui-xiang/chou-xiang.md)
+  * [继承](di-liu-zhang-mian-xiang-dui-xiang/ji-cheng.md)
+  * [多态 \[TODO\]](di-liu-zhang-mian-xiang-dui-xiang/duo-tai-todo.md)
