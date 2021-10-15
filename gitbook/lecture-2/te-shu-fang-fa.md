@@ -25,7 +25,7 @@ class SeqDuck:
 
 ### `__new__` & `__init__`
 
-在 Java 和 C\# 这些语言中，可以使用 `new` 关键字创建一个类的实例。Python 虽然没有 `new` 关键字，但提供了 `__new__` 特殊方法。在实例化一个 Python 类时，最先被调用的就是 `__new__` 方法。大多数情况下不需要我们重写 `__new__` 方法，Python 解释器也会执行 object 中的 `__new__` 方法创建类实例。但如果要使用单例模式，那么 `__new__` 方法就会派上用场。下面的代码展示了如何通过 `__new__` 控制只创建类的唯一实例。
+在 Java 和 C# 这些语言中，可以使用 `new` 关键字创建一个类的实例。Python 虽然没有 `new` 关键字，但提供了 `__new__` 特殊方法。在实例化一个 Python 类时，最先被调用的就是 `__new__` 方法。大多数情况下不需要我们重写 `__new__` 方法，Python 解释器也会执行 object 中的 `__new__` 方法创建类实例。但如果要使用单例模式，那么 `__new__` 方法就会派上用场。下面的代码展示了如何通过 `__new__` 控制只创建类的唯一实例。
 
 ```python
 >>> class Singleton:
@@ -84,7 +84,7 @@ p4 = Person.male('Tony')
 
 ### `__str__` & `__repr__`
 
-> str\(\) is used for creating output for end user while repr\(\) is mainly used for debugging and development. repr’s goal is to be **unambiguous** and str’s is to be **readable**.
+> str() is used for creating output for end user while repr() is mainly used for debugging and development. repr’s goal is to be **unambiguous** and str’s is to be **readable**.
 
 `__str__` 和 `__repr__` 都可以用来输出一个对象的字符串表示。使用 `str()` 时会调用 `__str__` 方法，使用 `repr()` 时则会调用 `__repr__` 方法。`str()` 可以看作 string 的缩写，类似于 Java 中的 `toString()` 方法；`repr()` 则是 representation 的缩写。
 
@@ -208,4 +208,3 @@ True
 重载了 “+” 运算符后，可以直接使用 `v1 + v2` 对 Vector 类进行向量相加，而不必要编写专门的 `add()` 方法，并且重载了 `==` 运算符取代了 `v1.equals(v2)` 的繁冗写法。从代码可读性来讲直接使用运算符可读性更高，也更符合数学逻辑。
 
 当然，运算符重载涉及的知识不止于此，《流畅的 Python》将其作为单独的一章，可见其重要性。下一节我们将就运算符重载进行深入的讨论。
-

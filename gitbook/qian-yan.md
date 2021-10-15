@@ -14,4 +14,3 @@
 * 命令行工具：Terminal + Zsh
 * 开发工具：PyCharm Professional 2020.3
 * Python 版本：3.8.6
-
