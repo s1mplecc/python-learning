@@ -1,28 +1,44 @@
 # 目录
 
-* [全书总览](./)
-* [前言](qian-yan.md)
-* [目录](mu-lu.md)
-* [第一章](lecture-1/)
-  * [环境准备](lecture-1/huan-jing-zhun-bei.md)
-    * [Python 版本](broken-reference)
-    * [依赖管理](broken-reference)
-    * [环境隔离](broken-reference)
-  * [Python 编码规范](lecture-1/python-bian-ma-gui-fan.md)
-    * [Python 之禅](broken-reference)
-    * [Python 风格指导](broken-reference)
-  * [如何阅读 Python 源码](lecture-1/ru-he-yue-du-python-yuan-ma.md)
-    * [函数注解](broken-reference)
-    * [类型提示](broken-reference)
-    * [.pyi 存根文件](broken-reference)
-    * [PyCharm 高效阅读源码](broken-reference)
-  * [单元测试](lecture-1/dan-yuan-ce-shi.md)
-    * [使用 pytest 编写测试用例](broken-reference)
-* [第二章](lecture-2/)
-  * [Python 是动态强类型语言](lecture-2/python-shi-dong-tai-qiang-lei-xing-yu-yan.md)
-  * [鸭子类型](lecture-2/ya-zi-lei-xing.md)
-  * [特殊方法](lecture-2/te-shu-fang-fa.md)
-* [第三章](lecture-3/)
-  * [函数是一等公民](lecture-3/han-shu-shi-yi-deng-gong-min.md)
-  * [闭包](lecture-3/bi-bao.md)
-  * [装饰器](lecture-3/zhuang-shi-qi.md)
+
+
+* 全书总览
+* 前言
+* 目录
+* 第一章：准备工作
+  * 环境准备
+  * Python 编码规范
+  * 如何阅读 Python 源码
+  * 单元测试
+* 第二章：语言特性
+  * Python 是动态强类型语言
+  * 鸭子类型
+  * 特殊方法
+  * 运算符重载
+* 第三章：可迭代类型
+  * 序列
+  * map、filter 与列表推导
+  * 可迭代对象、迭代器和生成器源码分析
+  * 生成器
+  * itertools 模块 \[TODO]
+* 第四章：函数
+  * 函数是一等公民
+  * 闭包
+  * 装饰器
+  * 可调用对象
+  * 函数对象与方法对象
+  * 函数的参数
+  * lambda 表达式
+  * functools 模块 \[TODO]
+* 第五章：类与元类
+  * 类的属性
+  * 类的方法
+  * 特性
+  * 描述符
+  * 元类 \[TODO]
+* 第六章：面向对象
+  * 封装
+  * 抽象
+  * 继承
+  * 多态 \[TODO]
+* 第七章：协程与并发 \[TOD
