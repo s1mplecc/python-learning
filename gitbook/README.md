@@ -4,7 +4,7 @@
 
 总的来说，Python 是一门注重实用，专为程序员高效编码而生的语言，它有自己的设计风格，Python 程序员为这种风格取名为 “**Pythonic**”。我相信随着对这本书的深入阅读和更多 Python 的编码实践，我能够对这种风格以及 Python 的设计理念有一些更深的感悟。
 
-代码已经托管到 Github 上，链接：[https://github.com/s1mplecc/python-learning-lectures](https://github.com/s1mplecc/python-learning-lectures)
+代码已经托管到 Github 上，链接：[https://github.com/s1mplecc/python-learning](https://github.com/s1mplecc/python-learning-lectures)
 
 本系列教程的工作环境：
 
